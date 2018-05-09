@@ -13,9 +13,15 @@ use Image;
 
 class ProductosController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        return Producto::defaultSelect()->get();
+        $productos = Producto::defaultSelect()
+            ->filtrar($request->producto)
+            ->get();
+        return $productos->map(function($item) {
+            $item->foto = url('api/productos/' . $item->produto . '/foto');
+            return $item;
+        });
     }
 
     public function foto($id)
@@ -30,7 +36,7 @@ class ProductosController extends Controller
             return $image->response('jpg');
 
         } catch(ModelNotFoundException $e) {
-            return "";
+            return redirect()->to(url('img/no_foto.png'));
         }
     }
 }

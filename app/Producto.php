@@ -18,4 +18,13 @@ class Producto extends Model
             'descricao'
         );
     }
+
+    public function scopeFiltrar($q, $prod)
+    {
+        if ($prod) {
+            $q = $q->where('produto', '=', $prod)
+            ->orWhere('descricao', 'like', '%'. $prod .'%');
+        }
+        return $q;
+    }
 }
