@@ -36,7 +36,7 @@ class ProductosController extends Controller
             return $image->response('jpg');
 
         } catch(ModelNotFoundException $e) {
-            return redirect()->to(url('img/no_foto.png'));
+            return '';
         }
     }
 }
