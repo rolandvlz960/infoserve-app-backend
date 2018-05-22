@@ -21,3 +21,5 @@ Route::post('login', 'API\UsuariosController@login');
 
 Route::get('productos', 'API\ProductosController@index');
 Route::get('productos/{id}/foto', 'API\ProductosController@foto');
+
+Route::get('clientes', 'API\ClientesController@index');

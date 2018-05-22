@@ -15,15 +15,24 @@ class Producto extends Model
         return $q->select(
             'produto',
             'digito',
-            'descricao'
+            'descricao',
+            'preco_a',
+            'preco_b',
+            'preco_c',
+            'preco_e',
+            'preco_f'
         );
     }
 
     public function scopeFiltrar($q, $prod)
     {
         if ($prod) {
-            $q = $q->where('produto', '=', $prod)
-            ->orWhere('descricao', 'like', '%'. $prod .'%');
+            if (str_contains($prod, "cod:")) {
+                $q = $q->where('produto', '=', str_replace("cod:", "", $prod));
+            } else {
+                $q = $q->where('produto', '=', $prod)
+                    ->orWhere('descricao', 'like', '%'. $prod .'%');
+            }
         }
         return $q;
     }
