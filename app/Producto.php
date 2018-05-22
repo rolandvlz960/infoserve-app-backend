@@ -15,6 +15,7 @@ class Producto extends Model
         return $q->select(
             'produto',
             'digito',
+            'referencia',
             'descricao',
             'preco_a',
             'preco_b',
