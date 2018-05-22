@@ -23,3 +23,5 @@ Route::get('productos', 'API\ProductosController@index');
 Route::get('productos/{id}/foto', 'API\ProductosController@foto');
 
 Route::get('clientes', 'API\ClientesController@index');
+
+Route::get('test', 'API\TestController@test');

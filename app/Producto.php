@@ -21,7 +21,13 @@ class Producto extends Model
             'preco_b',
             'preco_c',
             'preco_e',
-            'preco_f'
+            'preco_f',
+            'taxado_a',
+            'taxado_b',
+            'taxado_c',
+            'taxado_e',
+            'taxado_f'
+
         );
     }
 
