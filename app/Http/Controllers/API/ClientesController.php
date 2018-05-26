@@ -12,6 +12,7 @@ class ClientesController extends Controller
     public function index(Request $request)
     {
         return Cliente::defaultSelect()
+            ->nacionalidad($request->nacionalidad)
             ->filtrar($request->cliente)
             ->get();
     }

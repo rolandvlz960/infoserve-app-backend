@@ -27,7 +27,6 @@ class Producto extends Model
             'taxado_c',
             'taxado_e',
             'taxado_f'
-
         );
     }
 
@@ -35,9 +34,9 @@ class Producto extends Model
     {
         if ($prod) {
             if (str_contains($prod, "cod:")) {
-                $q = $q->where('produto', '=', str_replace("cod:", "", $prod));
+                $q = $q->where('digito', '=', str_replace("cod:", "", $prod));
             } else {
-                $q = $q->where('produto', '=', $prod)
+                $q = $q->where('digito', '=', $prod)
                     ->orWhere('descricao', 'like', '%'. $prod .'%');
             }
         }
