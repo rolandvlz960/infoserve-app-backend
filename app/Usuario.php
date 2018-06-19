@@ -14,7 +14,8 @@ class Usuario extends Model
     {
         return $q->select(
             'NUMERO',
-            'NOME'
+            'NOME',
+            'DEPOSITO'
         );
     }
 }

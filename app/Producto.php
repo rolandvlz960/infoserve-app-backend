@@ -27,6 +27,9 @@ class Producto extends Model
             'taxado_c',
             'taxado_e',
             'taxado_f'
+            // 'bloqapp',
+            // 'dep01',
+            // 'bloq_dep01'
         );
     }
 

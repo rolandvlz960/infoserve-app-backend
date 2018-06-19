@@ -9,6 +9,7 @@ use App\Http\Controllers\Controller;
 use App\Producto;
 use App\Foto;
 
+use DB;
 use Image;
 
 class ProductosController extends Controller
@@ -38,5 +39,32 @@ class ProductosController extends Controller
         } catch(ModelNotFoundException $e) {
             return '';
         }
+    }
+
+    public function incQtt($id, $dep)
+    {
+        $res = Producto::where('produto', $id)
+        ->where('dep01', '>', 0)
+        ->whereRaw("bloq_dep$dep < dep$dep")
+        ->update([
+            "bloq_dep$dep" => DB::raw('bloqapp + 1'),
+            'bloqapp' => DB::raw('bloqapp + 1')
+        ]);
+        return [
+            'success' => $res == 1 ? 'yes' : 'no'
+        ];
+    }
+
+    public function decQtt($id)
+    {
+        $res = Producto::where('produto', $id)
+        ->where('bloq_dep01', '>', 0)
+        ->update([
+            'bloq_dep01' => DB::raw('bloqapp - 1'),
+            'bloqapp' => DB::raw('bloqapp - 1')
+        ]);
+        return [
+            'success' => $res == 1 ? 'yes' : 'no'
+        ];
     }
 }
