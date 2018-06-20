@@ -20,9 +20,9 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 Route::post('login', 'API\UsuariosController@login');
 
 Route::get('productos', 'API\ProductosController@index');
-Route::get('productos/inc/{id}', 'API\ProductosController@incQtt');
-Route::get('productos/dec/{id}', 'API\ProductosController@decQtt');
 Route::get('productos/{id}/foto', 'API\ProductosController@foto');
+Route::post('productos/inc/{id}', 'API\ProductosController@incQtt');
+Route::post('productos/dec/{id}', 'API\ProductosController@decQtt');
 
 Route::get('clientes', 'API\ClientesController@index');
 

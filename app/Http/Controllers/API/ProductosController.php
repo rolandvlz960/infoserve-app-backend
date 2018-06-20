@@ -41,13 +41,14 @@ class ProductosController extends Controller
         }
     }
 
-    public function incQtt($id, $dep)
+    public function incQtt($id, Request $request)
     {
+        $dep = $request->dep;
         $res = Producto::where('produto', $id)
         ->where('dep01', '>', 0)
         ->whereRaw("bloq_dep$dep < dep$dep")
         ->update([
-            "bloq_dep$dep" => DB::raw('bloqapp + 1'),
+            "bloq_dep$dep" => DB::raw("bloq_dep$dep + 1"),
             'bloqapp' => DB::raw('bloqapp + 1')
         ]);
         return [
@@ -55,13 +56,15 @@ class ProductosController extends Controller
         ];
     }
 
-    public function decQtt($id)
+    public function decQtt($id, Request $request)
     {
+        $dep = $request->dep;
+        $numDeleted = $request->has('numDeleted') ? $request->numDeleted : 1;
         $res = Producto::where('produto', $id)
         ->where('bloq_dep01', '>', 0)
         ->update([
-            'bloq_dep01' => DB::raw('bloqapp - 1'),
-            'bloqapp' => DB::raw('bloqapp - 1')
+            "bloq_dep$dep" => DB::raw("bloq_dep$dep - $numDeleted"),
+            'bloqapp' => DB::raw("bloqapp - $numDeleted")
         ]);
         return [
             'success' => $res == 1 ? 'yes' : 'no'
