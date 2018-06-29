@@ -25,5 +25,7 @@ Route::post('productos/inc/{id}', 'API\ProductosController@incQtt');
 Route::post('productos/dec/{id}', 'API\ProductosController@decQtt');
 
 Route::get('clientes', 'API\ClientesController@index');
+Route::get('monedas', 'API\MonedasController@index');
+Route::get('cambio', 'API\CambioController@index');
 
 Route::get('test', 'API\TestController@test');
