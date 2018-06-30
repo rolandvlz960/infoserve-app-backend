@@ -28,4 +28,6 @@ Route::get('clientes', 'API\ClientesController@index');
 Route::get('monedas', 'API\MonedasController@index');
 Route::get('cambio', 'API\CambioController@index');
 
+Route::post('notas', 'API\NotaController@save');
+
 Route::get('test', 'API\TestController@test');
