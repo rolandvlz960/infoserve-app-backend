@@ -52,10 +52,10 @@ class NotaController extends Controller
                     // 'fotodoc2'
                 ];
                 if ($request->has('fotodoc1')) {
-                    $datos['fotodoc1'] = $request->fotodoc1;
+                    $datos['fotodoc1'] = base64_decode($request->fotodoc1);
                 }
                 if ($request->has('fotodoc2')) {
-                    $datos['fotodoc2'] = $request->fotodoc2;
+                    $datos['fotodoc2'] = base64_decode($request->fotodoc2);
                 }
                 ItemNota::create($datos);
 
