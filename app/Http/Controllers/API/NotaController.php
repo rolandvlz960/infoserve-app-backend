@@ -16,21 +16,26 @@ class NotaController extends Controller
 {
     public function save(Request $request)
     {
-        $nota = "";
-        DB::transaction(function() use($request, &$nota) {
+        $resultNota = [
+            'nota' => '',
+            'fecha' => '',
+            'hora' => ''
+        ];
+        DB::transaction(function() use($request, &$resultNota) {
             // Esto es nota = nota + 1
             DB::unprepared("lock tables fil120 write");
             $nota = Nota::max('nota') + 1;
+            $resultNota['nota'] = $nota;
             DB::insert("INSERT INTO `fil120` VALUES ($nota,9,1110,77,0,0,'2016-12-31',NULL,'09/2016','2015-04-12','',0,13,34,27,213,0,0.000000,0,1,'2008-01-08','','','','×Îçþè\nùß1Ä§','?í7•#ºòÔ’gTÄkÑg¬¬','¯ö÷î€rÙßg','','','','','','',215,0,6,0,0,27,0,95,0,24,0,8,10,0,0,2,3,0,0,0,0,0,0,0,17,0,0,0,0,0,0,'','','','','',0.00,'+dep01',0,'+dep01+dep02','+dep02','+dep10','+dep15','+dep20',0,0,'N','N','N','N','N','N','N',13,0,'','','','N','N','N','N','','','','','','','','S','','','','','','','','','','N','','','','','','','','','','','','','',0,'','','','','','','','','','','',0,'','','','','','','','',0,'',0.000,NULL,NULL,8000.00,0.00,0,0,'','','',0.00,2,0,'','N','','',0,1,0,0,0,0,0,'','','',0,'',0,'','',0,'','','','',0,'S',0,0,0,0,'','','','',0,0,'','','','',0,0,'','',0,'','',0,'',1,'','','','','','','','',0,0,0,0,'','',null,'','1.39.00.35F',0,0,0,'',0,0,0,'','','','','','','',0,0,0,0,'','','','',0,'','','');", []);
             DB::unprepared("unlock tables");
             
             // Solo para tests
             // $nota = Nota::find(2288);
             $cliente = null;
-            Log::info('QERY'. json_encode($request->all()));
+            // Log::info('QERY'. json_encode($request->all()));
             $turista = $request->turista == "n";
             if ($turista) {
-                $cliente = Cliente::where('cliente', $request->cliente)->first();
+                // $cliente = Cliente::where('cliente', $request->cliente)->first();
                 Log::info('-----CLIENTE-------' . json_encode($cliente));
             }
             foreach($request->items as $item) {
@@ -57,12 +62,16 @@ class NotaController extends Controller
                 if ($request->has('fotodoc2')) {
                     $datos['fotodoc2'] = base64_decode($request->fotodoc2);
                 }
-                ItemNota::create($datos);
+                $item = ItemNota::create($datos);
+                Log::info("ITEM:" . json_encode($item));
+                $resultNota['fecha'] = $item->data;
+                $resultNota['hora'] = $item->hora;
 
                 Producto::where('produto', $item['producto'])->update(['quant_pend' => DB::raw('quant_pend + 1')]);
 
             }
         });
-        return $nota . "T";
+        $resultNota['nota'] .= "T";
+        return $resultNota;
     }
 }
