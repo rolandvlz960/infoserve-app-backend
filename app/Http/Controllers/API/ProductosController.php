@@ -16,7 +16,7 @@ class ProductosController extends Controller
 {
     public function index(Request $request)
     {
-        $productos = Producto::defaultSelect()
+        $productos = Producto::defaultSelect($request->dep)
             ->filtrar($request->producto)
             ->get();
         return $productos->map(function($item) {

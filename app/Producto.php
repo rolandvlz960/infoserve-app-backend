@@ -3,6 +3,7 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use DB;
 
 class Producto extends Model
 {
@@ -10,7 +11,7 @@ class Producto extends Model
     protected $primaryKey = "digito";
     public $timestamps = false;
 
-    public function scopeDefaultSelect($q)
+    public function scopeDefaultSelect($q, $dep)
     {
         return $q->select(
             'produto',
@@ -26,7 +27,8 @@ class Producto extends Model
             'taxado_b',
             'taxado_c',
             'taxado_e',
-            'taxado_f'
+            'taxado_f',
+            DB::raw('dep_' . $dep . ' as cant')
             // 'bloqapp',
             // 'dep01',
             // 'bloq_dep01'
