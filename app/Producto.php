@@ -28,7 +28,7 @@ class Producto extends Model
             'taxado_c',
             'taxado_e',
             'taxado_f',
-            DB::raw('dep_' . $dep . ' as cant')
+            DB::raw('dep' . $dep . ' - bloq_dep' . $dep . ' as ctd')
             // 'bloqapp',
             // 'dep01',
             // 'bloq_dep01'
