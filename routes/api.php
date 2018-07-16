@@ -29,5 +29,6 @@ Route::get('monedas', 'API\MonedasController@index');
 Route::get('cambio', 'API\CambioController@index');
 
 Route::post('notas', 'API\NotaController@save');
+Route::get('notas/{doc}', 'API\NotaController@findByDoc');
 
 Route::get('test', 'API\TestController@test');

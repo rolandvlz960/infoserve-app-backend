@@ -74,4 +74,17 @@ class NotaController extends Controller
         $resultNota['nota'] .= "T";
         return $resultNota;
     }
+
+    /**
+     * Búsqueda de datos de formulario por num de cédula
+     */
+    public function findByDoc($doc)
+    {
+        return ItemNota::select(
+            'nome',
+            'endereco',
+            'cidade',
+            'telefone'
+        )->where('ruc', '=', $doc)->orderBy('sr_recno', 'desc')->first();
+    }
 }
