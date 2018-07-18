@@ -5,12 +5,17 @@ namespace App\Http\Controllers\API;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Log;
+use Carbon\Carbon;
+
+use Mike42\Escpos\PrintConnectors\NetworkPrintConnector;
+use Mike42\Escpos\Printer;
 
 use DB;
 use App\Nota;
 use App\Producto;
 use App\ItemNota;
 use App\Cliente;
+use App\Moneda;
 
 class NotaController extends Controller
 {
@@ -35,7 +40,7 @@ class NotaController extends Controller
             // Log::info('QERY'. json_encode($request->all()));
             $turista = $request->turista == "n";
             if ($turista) {
-                // $cliente = Cliente::where('cliente', $request->cliente)->first();
+                $cliente = Cliente::where('cliente', $request->cliente)->first();
                 Log::info('-----CLIENTE-------' . json_encode($cliente));
             }
             foreach($request->items as $item) {
@@ -45,11 +50,11 @@ class NotaController extends Controller
                     'data' => DB::select("SELECT ADDDATE( encerra, INTERVAL 1 DAY) as data from fil120 order by data desc limit 1;")[0]->data,
                     'hora' => DB::select("SELECT TIME_FORMAT(CURTIME(), '%h:%i:%s') AS hora")[0]->hora,
                     'cliente' => $request->cliente,
-                    'nome' => (is_null($cliente) || $turista) ? $request->nombre : $cliente->NOME,
-                    'endereco' => (is_null($cliente) || $turista) ? $request->direccion : $cliente->ENDERECO,
-                    'cidade' => (is_null($cliente) || $turista) ? $request->ciudad : $cliente->CIDADE,
-                    'telefone' => (is_null($cliente) || $turista) ? $request->telefono : $cliente->FONE,
-                    'ruc' => (is_null($cliente) || $turista) ? $request->ruc : $cliente->RUC,
+                    'nome' => !$turista ? $request->nombre : $cliente->NOME,
+                    'endereco' => !$turista ? $request->direccion : $cliente->ENDERECO,
+                    'cidade' => !$turista ? $request->ciudad : $cliente->CIDADE,
+                    'telefone' => !$turista ? $request->telefono : $cliente->FONE,
+                    'ruc' => !$turista ? $request->ruc : $cliente->RUC,
                     'produto' => $item['producto'],
                     'quantidade' => $item['cantidad'],
                     'preco' => $item['precio']
@@ -70,6 +75,39 @@ class NotaController extends Controller
                 Producto::where('produto', $item['producto'])->update(['quant_pend' => DB::raw('quant_pend + 1')]);
 
             }
+
+            $connector = new NetworkPrintConnector(env("PRINTER_IP"), env("PRINTER_PORT"));
+            $printer = new Printer($connector);
+            $total = 0;
+            $items = [];
+            $sigla = Moneda::first()->SIGLA;
+            $datetime = Carbon::createFromFormat("Y-m-d H:i:s", $resultNota['fecha'] . ' ' . $resultNota['hora']);
+            foreach($request->items as $item) {
+                $items[] = [
+                    Producto::select('descricao')->where('produto', $item['producto'])->first()->descricao,
+                    $item['cantidad'] . ' x ' . $sigla . " " . $item['precio'] . "        " . $sigla . ' ' . ($item['precio'] * $item['cantidad'])
+                ];
+                $total = $total + ( $item['precio'] * $item['cantidad'] );
+            }
+            $printer->text("                       \n");
+            $printer->text("                       \n");
+            $printer->text("                       \n");
+            $printer->text("NUMERO DE BOLETA: " . $resultNota['nota'] . "T\n");
+            $printer->text("CLIENTE: " . (!$turista ? $request->nombre : $cliente->NOME) . "\n");
+            $printer->text("TOTAL: " . $sigla . " " . $total . "\n");
+            $printer->text("FECHA: " . $datetime->format('d/m/Y H:i') . "\n");
+            $printer->text("------------------------------------------------\n");
+            foreach($items as $item) {
+                $printer->text($item[0] . "\n");
+                $printer->text($item[1] . "\n");
+            }
+            $printer->text("                       \n");
+            $printer->text("                       \n");
+            $printer->text("                       \n");
+            $printer->text("                       \n");
+            $printer->text("                       \n");
+            $printer->cut();
+            $printer->close();
         });
         $resultNota['nota'] .= "T";
         return $resultNota;
