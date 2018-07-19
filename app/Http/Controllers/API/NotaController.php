@@ -73,44 +73,82 @@ class NotaController extends Controller
                 $resultNota['hora'] = $item->hora;
 
                 Producto::where('produto', $item['producto'])->update(['quant_pend' => DB::raw('quant_pend + 1')]);
-
             }
-
-            $connector = new NetworkPrintConnector(env("PRINTER_IP"), env("PRINTER_PORT"));
-            $printer = new Printer($connector);
-            $total = 0;
-            $items = [];
-            $sigla = Moneda::first()->SIGLA;
-            $datetime = Carbon::createFromFormat("Y-m-d H:i:s", $resultNota['fecha'] . ' ' . $resultNota['hora']);
-            foreach($request->items as $item) {
-                $items[] = [
-                    Producto::select('descricao')->where('produto', $item['producto'])->first()->descricao,
-                    $item['cantidad'] . ' x ' . $sigla . " " . $item['precio'] . "        " . $sigla . ' ' . ($item['precio'] * $item['cantidad'])
-                ];
-                $total = $total + ( $item['precio'] * $item['cantidad'] );
+            if ($request->has('printerIp') && $request->printerIp !== '') {
+                $clienteNota = (!$turista ? $request->nombre : $cliente->NOME);
+                $hora = $resultNota['fecha'] . ' ' . $resultNota['hora'];
+                Log::info('----HORA STRING---' . $hora);
+                $datetime = Carbon::createFromFormat('Y-m-d H:i:s', $hora);
+                $this->printNota(
+                    $request->printerIp,
+                    $request->printerPort,
+                    $resultNota['nota'],
+                    $datetime->format('Y-m-d H:i'),
+                    $request->items,
+                    $clienteNota
+                );
             }
-            $printer->text("                       \n");
-            $printer->text("                       \n");
-            $printer->text("                       \n");
-            $printer->text("NUMERO DE BOLETA: " . $resultNota['nota'] . "T\n");
-            $printer->text("CLIENTE: " . (!$turista ? $request->nombre : $cliente->NOME) . "\n");
-            $printer->text("TOTAL: " . $sigla . " " . $total . "\n");
-            $printer->text("FECHA: " . $datetime->format('d/m/Y H:i') . "\n");
-            $printer->text("------------------------------------------------\n");
-            foreach($items as $item) {
-                $printer->text($item[0] . "\n");
-                $printer->text($item[1] . "\n");
-            }
-            $printer->text("                       \n");
-            $printer->text("                       \n");
-            $printer->text("                       \n");
-            $printer->text("                       \n");
-            $printer->text("                       \n");
-            $printer->cut();
-            $printer->close();
         });
         $resultNota['nota'] .= "T";
         return $resultNota;
+    }
+
+    /**
+     * Recepción e impresión de nota de forma remota.
+     */
+    public function reprint(Request $request)
+    {
+        $this->printNota(
+            $request->printerIp,
+            $request->printerPort,
+            $request->nota,
+            $request->fecha,
+            $request->items,
+            $request->cliente
+        );
+        return [
+            'msg' => 'OK'
+        ];
+    }
+
+    /**
+     * Imprimir nota de forma remota.
+     */
+    private function printNota($printerIp, $printerPort, $nota, $fecha, $receivedItems, $cliente)
+    {
+        Log::info('-------FECHA HORA-----' . $fecha);
+        $connector = new NetworkPrintConnector($printerIp, $printerPort);
+        $printer = new Printer($connector);
+        $total = 0;
+        $items = [];
+        $sigla = Moneda::first()->SIGLA;
+        $datetime = Carbon::createFromFormat("Y-m-d H:i", $fecha);
+        foreach($receivedItems as $item) {
+            $items[] = [
+                Producto::select('descricao')->where('produto', $item['producto'])->first()->descricao,
+                $item['cantidad'] . ' x ' . $sigla . " " . $item['precio'] . "        " . $sigla . ' ' . ($item['precio'] * $item['cantidad'])
+            ];
+            $total = $total + ( $item['precio'] * $item['cantidad'] );
+        }
+        $printer->text("                       \n");
+        $printer->text("                       \n");
+        $printer->text("                       \n");
+        $printer->text("NUMERO DE BOLETA: " . $nota . "T\n");
+        $printer->text("CLIENTE: " . $cliente . "\n");
+        $printer->text("TOTAL: " . $sigla . " " . $total . "\n");
+        $printer->text("FECHA: " . $datetime->format('d/m/Y H:i') . "\n");
+        $printer->text("------------------------------------------------\n");
+        foreach($items as $item) {
+            $printer->text($item[0] . "\n");
+            $printer->text($item[1] . "\n");
+        }
+        $printer->text("                       \n");
+        $printer->text("                       \n");
+        $printer->text("                       \n");
+        $printer->text("                       \n");
+        $printer->text("                       \n");
+        $printer->cut();
+        $printer->close();
     }
 
     /**
