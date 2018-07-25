@@ -12,6 +12,7 @@ use Mike42\Escpos\Printer;
 
 use DB;
 use App\Nota;
+use App\Usuario;
 use App\Producto;
 use App\ItemNota;
 use App\Cliente;
@@ -24,7 +25,10 @@ class NotaController extends Controller
         $resultNota = [
             'nota' => '',
             'fecha' => '',
-            'hora' => ''
+            'hora' => '',
+            'mensagem_1' => '',
+            'mensagem_2' => '',
+            'resumida' => ''
         ];
         DB::transaction(function() use($request, &$resultNota) {
             // Esto es nota = nota + 1
@@ -82,13 +86,19 @@ class NotaController extends Controller
                 $this->printNota(
                     $request->printerIp,
                     $request->printerPort,
-                    $resultNota['nota'],
+                    $resultNota['nota'] . "T",
                     $datetime->format('Y-m-d H:i'),
                     $request->items,
-                    $clienteNota
+                    $clienteNota,
+                    Usuario::select('numero', 'nome', 'deposito')->find($request->vendedor)
                 );
             }
         });
+        $mensagens = DB::table('FIL050')->select('MENSAGEM_1', 'MENSAGEM_2', 'NTRESTABLET')->first();
+        $resultNota['nota'] .= "T";
+        $resultNota['mensagem_1'] .= $mensagens->MENSAGEM_1;
+        $resultNota['mensagem_2'] .= $mensagens->MENSAGEM_2;
+        $resultNota['resumida'] .= $mensagens->NTRESTABLET;
         $resultNota['nota'] .= "T";
         return $resultNota;
     }
@@ -104,7 +114,8 @@ class NotaController extends Controller
             $request->nota,
             $request->fecha,
             $request->items,
-            $request->cliente
+            $request->cliente,
+            Usuario::select('numero', 'nome', 'deposito')->find($request->usuario)
         );
         return [
             'msg' => 'OK'
@@ -114,41 +125,83 @@ class NotaController extends Controller
     /**
      * Imprimir nota de forma remota.
      */
-    private function printNota($printerIp, $printerPort, $nota, $fecha, $receivedItems, $cliente)
-    {
-        Log::info('-------FECHA HORA-----' . $fecha);
+    private function printNota(
+        $printerIp,
+        $printerPort,
+        $nota,
+        $fecha,
+        $receivedItems,
+        $cliente,
+        $usuario
+    ) {
         $connector = new NetworkPrintConnector($printerIp, $printerPort);
         $printer = new Printer($connector);
         $total = 0;
         $items = [];
-        $sigla = Moneda::first()->SIGLA;
-        $datetime = Carbon::createFromFormat("Y-m-d H:i", $fecha);
-        foreach($receivedItems as $item) {
-            $items[] = [
-                Producto::select('descricao')->where('produto', $item['producto'])->first()->descricao,
-                $item['cantidad'] . ' x ' . $sigla . " " . $item['precio'] . "        " . $sigla . ' ' . ($item['precio'] * $item['cantidad'])
-            ];
-            $total = $total + ( $item['precio'] * $item['cantidad'] );
+        $cant = 0;
+        $mensagens = DB::table('FIL050')->select('MENSAGEM_1', 'MENSAGEM_2', 'NTRESTABLET')->first();
+        if ($mensagens->NTRESTABLET == 'S') {
+            $printer->text("                       \n");
+            $printer->text("                       \n");
+            $printer->text("                       \n");
+            $printer->text("                       \n");
+            $printer->text("                       \n");
+            $printer->text("                       \n");
+            $printer->text("Numero: " . $nota . "\n");
+            $printer->text("                       \n");
+            $printer->text("                       \n");
+            $printer->text("                       \n");
+            $printer->text("                       \n");
+            $printer->text("                       \n");
+            $printer->text("                       \n");
+            $printer->close();
+        } else {
+            $sigla = Moneda::first()->SIGLA;
+            $datetime = Carbon::createFromFormat("Y-m-d H:i", $fecha);
+            $mensagens = DB::table('FIL050')->select('MENSAGEM_1', 'MENSAGEM_2')->first();
+            foreach($receivedItems as $item) {
+                $res = Producto::select('descricao')->where('produto', $item['producto'])->first();
+                $items[] = [
+                    $res->codigo . "    " . $res->descricao,
+                    $item['cantidad'] . ' x ' . $sigla . " " . $item['precio'] . "    " . $sigla . ' ' . ($item['precio'] * $item['cantidad'])
+                ];
+                $cant += $item['cantidad'];
+                $total = $total + ( $item['precio'] * $item['cantidad'] );
+            }
+            $printer->text("                       \n");
+            $printer->text("                       \n");
+            $printer->text("                       \n");
+            $printer->text("------------------------------------------------\n");
+            $printer->text("VENTAS\n");
+            $printer->text("PEDIDO DE VENTAS\n");
+            $printer->text("Fecha de emision: " . $datetime->format('d/m/Y H:i') . "\n");
+            $printer->text("Cliente: " . $cliente . "\n");
+            $printer->text("Usuario: " . $usuario->numero . "-" . $usuario->nome . "\n");
+            $printer->text("Numero: " . $nota . "\n");
+            $printer->text("Deposito: " . $usuario->deposito . "\n");
+            $printer->text("================================================\n");
+            $printer->text("Codigo" . chr(9) . "Descrip.\n");
+            $printer->text("Cant" . chr(9) . "Precio" . chr(9) . "Total\n");
+            foreach($items as $item) {
+                $printer->text($item[0] . "\n");
+                $printer->text($item[1] . "\n");
+            }
+            $printer->text("------------------------------------------------\n");
+            $printer->text("Total: " . $sigla . " " . $total . "    Items: " . $cant . "\n");
+            $printer->text("------------------------------------------------\n");
+            $printer->text("Total: " . $sigla . " " . $total . "\n");
+            $printer->text("Desc: 0\n");
+            $printer->text("Total: " . $sigla . " " . $total . "\n");
+            $printer->text("================================================\n");
+            $printer->text($mensagens->MENSAGEM_1 . "\n");
+            $printer->text($mensagens->MENSAGEM_2 . "\n");
+            $printer->text("                       \n");
+            $printer->text("                       \n");
+            $printer->text("                       \n");
+            $printer->text("                       \n");
+            $printer->text("                       \n");
+            $printer->close();
         }
-        $printer->text("                       \n");
-        $printer->text("                       \n");
-        $printer->text("                       \n");
-        $printer->text("NUMERO DE BOLETA: " . $nota . "T\n");
-        $printer->text("CLIENTE: " . $cliente . "\n");
-        $printer->text("TOTAL: " . $sigla . " " . $total . "\n");
-        $printer->text("FECHA: " . $datetime->format('d/m/Y H:i') . "\n");
-        $printer->text("------------------------------------------------\n");
-        foreach($items as $item) {
-            $printer->text($item[0] . "\n");
-            $printer->text($item[1] . "\n");
-        }
-        $printer->text("                       \n");
-        $printer->text("                       \n");
-        $printer->text("                       \n");
-        $printer->text("                       \n");
-        $printer->text("                       \n");
-        $printer->cut();
-        $printer->close();
     }
 
     /**
