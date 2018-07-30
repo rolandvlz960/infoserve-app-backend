@@ -15,7 +15,7 @@ class UsuariosController extends Controller
         try {
             return Usuario::defaultSelect()
                 ->where('USUARIO', '=', $request->username)
-                ->where('SENHA', '=', $request->password)
+                // ->where('SENHA', '=', $request->password)
                 ->where('sr_deleted', '<>', 'T')
                 ->firstOrFail();
         } catch(ModelNotFoundException $e) {
