@@ -32,4 +32,6 @@ Route::post('notas', 'API\NotaController@save');
 Route::post('notas/reprint', 'API\NotaController@reprint');
 Route::get('notas/{doc}', 'API\NotaController@findByDoc');
 
+Route::get('printers', 'API\PrintersController@index');
+
 Route::get('test', 'API\TestController@test');
