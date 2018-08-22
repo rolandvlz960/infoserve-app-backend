@@ -35,7 +35,7 @@ class NotaController extends Controller
             DB::unprepared("lock tables fil120 write");
             $nota = Nota::max('nota') + 1;
             $resultNota['nota'] = $nota;
-            DB::insert("UPDATE `fil120` SET $nota = ?;", [$nota]);
+            DB::insert("UPDATE `fil120` SET NOTA = ?;", [$nota]);
             DB::unprepared("unlock tables");
             
             // Solo para tests
