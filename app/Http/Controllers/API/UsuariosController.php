@@ -7,11 +7,15 @@ use App\Http\Controllers\Controller;
 
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use App\Usuario;
+use App\Nota;
 
 class UsuariosController extends Controller
 {
     public function login(Request $request)
     {
+        if (Nota::first()->STATUS_NT != '') {
+            abort(404);
+        }
         try {
             return Usuario::defaultSelect()
                 ->where('USUARIO', '=', $request->username)
