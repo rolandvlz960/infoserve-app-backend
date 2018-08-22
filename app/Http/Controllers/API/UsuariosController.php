@@ -15,6 +15,7 @@ class UsuariosController extends Controller
     {
         if (Nota::first()->STATUS_NT != '') {
             abort(404);
+            return null;
         }
         try {
             return Usuario::defaultSelect()
