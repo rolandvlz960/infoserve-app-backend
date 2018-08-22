@@ -17,6 +17,7 @@ class UsuariosController extends Controller
                 ->where('USUARIO', '=', $request->username)
                 // ->where('SENHA', '=', $request->password)
                 ->where('sr_deleted', '<>', 'T')
+                ->where('STATUS_NT', '=', '')
                 ->firstOrFail();
         } catch(ModelNotFoundException $e) {
             abort(404);
