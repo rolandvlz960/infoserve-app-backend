@@ -18,6 +18,7 @@ class ProductosController extends Controller
     {
         $productos = Producto::defaultSelect($request->dep)
             ->filtrar($request->producto)
+            ->where('COMPOSTO', '<>', 'S')
             ->get();
         return $productos->map(function($item) {
             $item->foto = url('api/productos/' . $item->produto . '/foto');
