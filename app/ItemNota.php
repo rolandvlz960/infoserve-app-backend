@@ -24,6 +24,8 @@ class ItemNota extends Model
         'prazo',
         'fotodoc1',
         'fotodoc2',
+        'doc',
+        'deposito',
     ];
     protected $primaryKey = "digito";
     public $timestamps = false;

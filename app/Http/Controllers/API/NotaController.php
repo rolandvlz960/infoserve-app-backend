@@ -47,6 +47,7 @@ class NotaController extends Controller
                 $cliente = Cliente::where('cliente', $request->cliente)->first();
                 Log::info('-----CLIENTE-------' . json_encode($cliente));
             }
+            $vendedor = Usuario::select('deposito')->find($request->vendedor);
             foreach($request->items as $item) {
                 $datos = [
                     'vendedor' => $request->vendedor,
@@ -59,6 +60,8 @@ class NotaController extends Controller
                     'cidade' => !$turista ? $request->ciudad : $cliente->CIDADE,
                     'telefone' => !$turista ? $request->telefono : $cliente->FONE,
                     'ruc' => !$turista ? $request->ruc : $cliente->RUC,
+                    'doc' => !$turista ? $request->doc : $cliente->RG,
+                    'deposito' => $vendedor->DEPOSITO,
                     'produto' => $item['producto'],
                     'quantidade' => $item['cantidad'],
                     'preco' => $item['precio']
