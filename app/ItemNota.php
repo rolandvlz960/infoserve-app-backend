@@ -23,6 +23,7 @@ class ItemNota extends Model
         'telefone',
         'ruc',
         'produto',
+        'prodkit',
         'quantidade',
         'preco',
         'prazo',

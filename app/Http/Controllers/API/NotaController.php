@@ -67,6 +67,7 @@ class NotaController extends Controller
                     'doc' => !$turista ? $request->doc : $cliente->RG,
                     'deposito' => $vendedor->DEPOSITO,
                     'produto' => $item['producto'],
+                    'prodkit' => 'N',
                     'quantidade' => $item['cantidad'],
                     'preco' => $item['precio']
                     // 'fotodoc1',
