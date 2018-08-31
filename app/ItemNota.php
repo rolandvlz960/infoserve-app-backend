@@ -10,6 +10,7 @@ class ItemNota extends Model
     protected $fillable = [
         'vendedor',
         'mobiid',
+        'mobicli',
         'mobiped',
         'data',
         'hora',
