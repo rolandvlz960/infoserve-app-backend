@@ -17,6 +17,7 @@ class ItemNota extends Model
         'cliente',
         'nome',
         'endereco',
+        'codcidade',
         'cidade',
         'telefone',
         'ruc',

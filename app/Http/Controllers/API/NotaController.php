@@ -59,6 +59,7 @@ class NotaController extends Controller
                     'cliente' => $request->cliente,
                     'nome' => !$turista ? $request->nombre : $cliente->NOME,
                     'endereco' => !$turista ? $request->direccion : $cliente->ENDERECO,
+                    'codcidade' => 0,
                     'cidade' => !$turista ? $request->ciudad : $cliente->CIDADE,
                     'telefone' => !$turista ? $request->telefono : $cliente->FONE,
                     'ruc' => !$turista ? $request->ruc : $cliente->RUC,
