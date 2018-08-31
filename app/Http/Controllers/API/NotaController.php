@@ -69,7 +69,8 @@ class NotaController extends Controller
                     'produto' => $item['producto'],
                     'prodkit' => 'N',
                     'quantidade' => $item['cantidad'],
-                    'preco' => $item['precio']
+                    'preco' => $item['precio'],
+                    'prazo' => 0,
                     // 'fotodoc1',
                     // 'fotodoc2'
                 ];
