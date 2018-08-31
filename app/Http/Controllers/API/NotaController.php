@@ -52,6 +52,7 @@ class NotaController extends Controller
                 $datos = [
                     'vendedor' => $request->vendedor,
                     'mobiped' => $nota,
+                    'mobiid' => 0,
                     'data' => DB::select("SELECT ADDDATE( encerra, INTERVAL 1 DAY) as data from fil120 order by data desc limit 1;")[0]->data,
                     'hora' => DB::select("SELECT TIME_FORMAT(CURTIME(), '%h:%i:%s') AS hora")[0]->hora,
                     'cliente' => $request->cliente,

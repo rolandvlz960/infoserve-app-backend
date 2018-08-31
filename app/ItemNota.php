@@ -9,6 +9,7 @@ class ItemNota extends Model
     protected $table = "fil1003";
     protected $fillable = [
         'vendedor',
+        'mobiid',
         'mobiped',
         'data',
         'hora',
