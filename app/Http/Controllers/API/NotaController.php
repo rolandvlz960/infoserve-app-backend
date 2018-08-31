@@ -217,6 +217,6 @@ class NotaController extends Controller
             'endereco',
             'cidade',
             'telefone'
-        )->where('ruc', '=', $doc)->orderBy('sr_recno', 'desc')->first();
+        )->where('doc', '=', $doc)->orderBy('sr_recno', 'desc')->first();
     }
 }
