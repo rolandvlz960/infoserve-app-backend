@@ -15,6 +15,7 @@ class ItemNota extends Model
         'data',
         'hora',
         'cliente',
+        'clinovo',
         'nome',
         'endereco',
         'codcidade',
