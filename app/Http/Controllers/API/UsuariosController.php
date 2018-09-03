@@ -17,14 +17,15 @@ class UsuariosController extends Controller
             abort(404);
             return null;
         }
-        try {
-            return Usuario::defaultSelect()
-                ->where('USUARIO', '=', $request->username)
-                // ->where('SENHA', '=', $request->password)
-                ->where('sr_deleted', '<>', 'T')
-                ->firstOrFail();
-        } catch(ModelNotFoundException $e) {
+        $usuario = Usuario::defaultSelect()
+            ->where('USUARIO', '=', $request->username)
+            // ->where('SENHA', '=', $request->password)
+            ->where('sr_deleted', '<>', 'T')
+            ->first();
+        if(is_null($usuario)) {
             abort(404);
+            return null;
         }
+        return $usuario;
     }
 }
