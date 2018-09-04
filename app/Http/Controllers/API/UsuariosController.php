@@ -13,9 +13,10 @@ class UsuariosController extends Controller
 {
     public function login(Request $request)
     {
-        if (Nota::first()->STATUS_NT != '') {
-            abort(404);
-            return null;
+        if (Nota::first()->STATUS_NT != 'L') {
+            return [
+                'err' => 'blocked'
+            ];
         }
         $usuario = Usuario::defaultSelect()
             ->where('USUARIO', '=', $request->username)
