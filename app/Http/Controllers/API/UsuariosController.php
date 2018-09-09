@@ -29,4 +29,9 @@ class UsuariosController extends Controller
         }
         return $usuario;
     }
+
+    public function getAll()
+    {
+        return Usuario::select('numero', 'nome')->get();
+    }
 }
