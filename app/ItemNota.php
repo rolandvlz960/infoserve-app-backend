@@ -12,6 +12,7 @@ class ItemNota extends Model
         'mobiid',
         'mobicli',
         'mobiped',
+        'notas',
         'data',
         'hora',
         'cliente',
