@@ -48,8 +48,8 @@ class NotaController extends Controller
                 Log::info('-----CLIENTE-------' . json_encode($cliente));
             }
             $vendedor = Usuario::select('deposito')->find($request->vendedor);
-            Log::info('ID VENDEDOR', json_encode($request->vendedor));
-            Log::info('VENDEDOR', json_encode($vendedor));
+            Log::info('ID VENDEDOR: ' . json_encode($request->vendedor));
+            Log::info('VENDEDOR: ' . json_encode($vendedor));
             foreach($request->items as $item) {
                 $datos = [
                     'vendedor' => $request->vendedor,
