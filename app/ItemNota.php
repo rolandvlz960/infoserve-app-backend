@@ -33,6 +33,7 @@ class ItemNota extends Model
         'doc',
         'deposito',
         'ref_opera',
+        'autoriza',
     ];
     protected $primaryKey = "digito";
     public $timestamps = false;
