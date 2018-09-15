@@ -69,7 +69,7 @@ class NotaController extends Controller
                     'telefone' => !$turista ? $request->telefono : $cliente->FONE,
                     'ruc' => !$turista ? $request->ruc : $cliente->RUC,
                     'doc' => !$turista ? $request->doc : $cliente->RG,
-                    'deposito' => $vendedor->DEPOSITO,
+                    'deposito' => isset($vendedor->DEPOSITO) ? $vendedor->DEPOSITO : $vendedor->deposito,
                     'produto' => $item['producto'],
                     'prodkit' => 'N',
                     'quantidade' => $item['cantidad'],
