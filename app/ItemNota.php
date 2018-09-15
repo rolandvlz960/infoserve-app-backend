@@ -32,6 +32,7 @@ class ItemNota extends Model
         'fotodoc2',
         'doc',
         'deposito',
+        'ref_opera',
     ];
     protected $primaryKey = "digito";
     public $timestamps = false;

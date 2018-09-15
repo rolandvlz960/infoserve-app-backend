@@ -72,6 +72,7 @@ class NotaController extends Controller
                     'quantidade' => $item['cantidad'],
                     'preco' => $item['precio'],
                     'prazo' => 0,
+                    'ref_opera' => 0,
                     // 'fotodoc1',
                     // 'fotodoc2'
                 ];
