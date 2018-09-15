@@ -74,6 +74,7 @@ class NotaController extends Controller
                     'prazo' => 0,
                     'ref_opera' => 0,
                     'autoriza' => 0,
+                    'finalizar' => 0,
                     // 'fotodoc1',
                     // 'fotodoc2'
                 ];

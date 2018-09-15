@@ -34,6 +34,7 @@ class ItemNota extends Model
         'deposito',
         'ref_opera',
         'autoriza',
+        'finalizar',
     ];
     protected $primaryKey = "digito";
     public $timestamps = false;
