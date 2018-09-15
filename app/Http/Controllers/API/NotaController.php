@@ -45,12 +45,8 @@ class NotaController extends Controller
             $turista = $request->turista == "n";
             if ($turista) {
                 $cliente = Cliente::where('cliente', $request->cliente)->first();
-                Log::info('-----CLIENTE-------' . json_encode($cliente));
             }
             $vendedor = Usuario::select('deposito')->find($request->vendedor);
-            Log::info('ID VENDEDOR: ' . json_encode($request->vendedor));
-            Log::info('VENDEDOR DEPOSITO: ' . json_encode($vendedor->DEPOSITO));
-            Log::info('VENDEDOR deposito: ' . json_encode($vendedor->deposito));
             foreach($request->items as $item) {
                 $datos = [
                     'vendedor' => $request->vendedor,
@@ -89,7 +85,6 @@ class NotaController extends Controller
                     $datos['fotodoc2'] = base64_decode($request->fotodoc2);
                 }
                 $item = ItemNota::create($datos);
-                Log::info("ITEM:" . json_encode($item));
                 $resultNota['fecha'] = $item->data;
                 $resultNota['hora'] = $item->hora;
 
@@ -98,7 +93,6 @@ class NotaController extends Controller
             if ($request->has('printerIp') && $request->printerIp !== '') {
                 $clienteNota = (!$turista ? $request->nombre : $cliente->NOME);
                 $hora = $resultNota['fecha'] . ' ' . $resultNota['hora'];
-                Log::info('----HORA STRING---' . $hora);
                 $datetime = Carbon::createFromFormat('Y-m-d H:i:s', $hora);
                 $this->printNota(
                     $request->printerIp,
