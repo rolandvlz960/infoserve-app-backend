@@ -171,7 +171,7 @@ class NotaController extends Controller
             $datetime = Carbon::createFromFormat("Y-m-d H:i", $fecha);
             $mensagens = DB::table('FIL050')->select('MENSAGEM_1', 'MENSAGEM_2')->first();
             foreach($receivedItems as $item) {
-                $res = Producto::select('descricao')->where('produto', $item['producto'])->first();
+                $res = Producto::select('codigo', 'descricao')->where('produto', $item['producto'])->first();
                 $items[] = [
                     $res->codigo . "    " . $res->descricao,
                     $item['cantidad'] . ' x ' . $sigla . " " . $item['precio'] . "    " . $sigla . ' ' . ($item['precio'] * $item['cantidad'])
@@ -191,8 +191,8 @@ class NotaController extends Controller
             $printer->text("Numero: " . $nota . "\n");
             $printer->text("Deposito: " . $usuario->deposito . "\n");
             $printer->text("================================================\n");
-            $printer->text("Codigo" . chr(9) . "Descrip.\n");
-            $printer->text("Cant" . chr(9) . "Precio" . chr(9) . "Total\n");
+            $printer->text("Codigo    Descrip.\n");
+            $printer->text("Cant    Precio    Total\n");
             foreach($items as $item) {
                 $printer->text($item[0] . "\n");
                 $printer->text($item[1] . "\n");
