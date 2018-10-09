@@ -173,7 +173,7 @@ class NotaController extends Controller
             foreach($receivedItems as $item) {
                 $res = Producto::select('produto', 'descricao')->where('produto', $item['producto'])->first();
                 $items[] = [
-                    $res->codigo . "    " . $res->descricao,
+                    $res->produto . "    " . $res->descricao,
                     $item['cantidad'] . ' x ' . $sigla . " " . $item['precio'] . "    " . $sigla . ' ' . ($item['precio'] * $item['cantidad'])
                 ];
                 $cant += $item['cantidad'];
