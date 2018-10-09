@@ -171,7 +171,7 @@ class NotaController extends Controller
             $datetime = Carbon::createFromFormat("Y-m-d H:i", $fecha);
             $mensagens = DB::table('FIL050')->select('MENSAGEM_1', 'MENSAGEM_2')->first();
             foreach($receivedItems as $item) {
-                $res = Producto::select('codigo', 'descricao')->where('produto', $item['producto'])->first();
+                $res = Producto::select('produto', 'descricao')->where('produto', $item['producto'])->first();
                 $items[] = [
                     $res->codigo . "    " . $res->descricao,
                     $item['cantidad'] . ' x ' . $sigla . " " . $item['precio'] . "    " . $sigla . ' ' . ($item['precio'] * $item['cantidad'])
