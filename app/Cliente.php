@@ -31,7 +31,7 @@ class Cliente extends Model
         if ($nacionalidad == 2) {
             return $q->where('cli_pessoa', '=', 1);
         } else if ($nacionalidad == 1 || $nacionalidad == 3) {
-            return $q->where('cli_pessoa', '<>', 1);
+            return $q->where('cli_pessoa', '<>', 2);
         }
         return $q;
     }
