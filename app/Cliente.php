@@ -28,9 +28,9 @@ class Cliente extends Model
      */
     public function scopeNacionalidad($q, $nacionalidad)
     {
-        if ($nacionalidad == 2) {
-            return $q->where('cli_pessoa', '=', 1);
-        } else if ($nacionalidad == 1 || $nacionalidad == 3) {
+        if ($nacionalidad == 1) {
+            return $q->where('cli_pessoa', '=', 2);
+        } else {
             return $q->where('cli_pessoa', '<>', 2);
         }
         return $q;
