@@ -221,8 +221,8 @@ class NotaController extends Controller
 
     private function cut($host, $port)
     {
-        $connector = new Posprint\Connector\Network($host, $port);
-        $printer = new Posprint\Printers\Bematech($connector);
+        $connector = new \Posprint\Connectors\Network($host, $port);
+        $printer = new \Posprint\Printers\Bematech($connector);
         $printer->lineFeed(2);
         $printer->cut();
         $printer->send();
