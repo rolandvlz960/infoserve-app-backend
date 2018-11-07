@@ -188,7 +188,7 @@ class NotaController extends Controller
             $printer->text("VENTAS\n");
             $printer->text("PEDIDO DE VENTAS\n");
             $printer->text("Fecha de emision: " . $datetime->format('d/m/Y H:i') . "\n");
-            $printer->text("Cliente: " . $cliente . "\n");
+            $printer->text("Cliente: " . strtoupper($cliente) . "\n");
             $printer->text("Usuario: " . $usuario->numero . "-" . $usuario->nome . "\n");
             $printer->text("Numero: " . $nota . "\n");
             $printer->text("Deposito: " . $usuario->deposito . "\n");
