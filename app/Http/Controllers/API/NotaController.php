@@ -109,7 +109,6 @@ class NotaController extends Controller
             }
         });
         $mensagens = DB::table('FIL050')->select('MENSAGEM_1', 'MENSAGEM_2', 'NTRESTABLET')->first();
-        $resultNota['nota'] .= "T";
         $resultNota['mensagem_1'] .= $mensagens->MENSAGEM_1;
         $resultNota['mensagem_2'] .= $mensagens->MENSAGEM_2;
         $resultNota['resumida'] .= $mensagens->NTRESTABLET;
