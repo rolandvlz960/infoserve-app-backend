@@ -214,9 +214,18 @@ class NotaController extends Controller
             $printer->text("                       \n");
             $printer->text("                       \n");
             $printer->feed(1);
-            $printer->text("ESCm");
+            $this->cut($printerIp, $printerPort);
             $printer->close();
         }
+    }
+
+    private function cut($host, $port)
+    {
+        $connector = new Posprint\Connector\Network($host, $port);
+        $printer = new Posprint\Printers\Bematech($connector);
+        $printer->lineFeed(2);
+        $printer->cut();
+        $printer->send();
     }
 
     /**
