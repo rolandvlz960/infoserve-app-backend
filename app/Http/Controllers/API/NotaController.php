@@ -226,6 +226,7 @@ class NotaController extends Controller
         $printer->lineFeed(2);
         $printer->cut();
         $printer->send();
+        $printer->close();
     }
 
     /**
