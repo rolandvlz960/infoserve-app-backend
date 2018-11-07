@@ -214,7 +214,7 @@ class NotaController extends Controller
             $printer->text("                       \n");
             $printer->text("                       \n");
             $printer->feed(1);
-            $printer->text(chr(27) . "M");
+            $printer->text("'m");
             $printer->close();
         }
     }
