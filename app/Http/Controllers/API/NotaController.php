@@ -176,7 +176,7 @@ class NotaController extends Controller
                 $res = Producto::select('digito', 'descricao')->where('produto', $item['producto'])->first();
                 $items[] = [
                     $res->digito . "    " . $res->descricao,
-                    $item['cantidad'] . ' x ' . $sigla . " " . $item['precio'] . "    " . $sigla . ' ' . ($item['precio'] * $item['cantidad'])
+                    $item['cantidad'] . ' x ' . $sigla . " " . number_format($item['precio'], 2) . "    " . $sigla . ' ' . number_format($item['precio'] * $item['cantidad'], 2)
                 ];
                 $cant += $item['cantidad'];
                 $total = $total + ( $item['precio'] * $item['cantidad'] );
@@ -200,11 +200,11 @@ class NotaController extends Controller
                 $printer->text($item[1] . "\n");
             }
             $printer->text("------------------------------------------------\n");
-            $printer->text("Total: " . $sigla . " " . $total . "    Items: " . $cant . "\n");
+            $printer->text("Total: " . $sigla . " " . number_format($total, 2) . "    Items: " . $cant . "\n");
             $printer->text("------------------------------------------------\n");
-            $printer->text("Total: " . $sigla . " " . $total . "\n");
+            $printer->text("Total: " . $sigla . " " . number_format($total, 2) . "\n");
             $printer->text("Desc: 0\n");
-            $printer->text("Total: " . $sigla . " " . $total . "\n");
+            $printer->text("Total: " . $sigla . " " . number_format($total, 2) . "\n");
             $printer->text("================================================\n");
             $printer->text($mensagens->MENSAGEM_1 . "\n");
             $printer->text($mensagens->MENSAGEM_2 . "\n");
