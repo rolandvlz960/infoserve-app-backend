@@ -92,7 +92,7 @@ class NotaController extends Controller
                 Producto::where('produto', $item['producto'])->update(['quant_pend' => DB::raw('quant_pend + 1')]);
             }
             if ($request->has('printerIp') && $request->printerIp !== '') {
-                $clienteNota = (!$turista ? strtoupper($request->nombre) : $cliente->digito . ' - '  . strtoupper($cliente->NOME));
+                $clienteNota = (!$turista ? $cliente->digito . ' - ' . strtoupper($request->nombre) : $cliente->digito . ' - '  . strtoupper($cliente->NOME));
                 $hora = $resultNota['fecha'] . ' ' . $resultNota['hora'];
                 $datetime = Carbon::createFromFormat('Y-m-d H:i:s', $hora);
                 $this->printNota(
