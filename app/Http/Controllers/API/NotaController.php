@@ -46,6 +46,8 @@ class NotaController extends Controller
             if ($turista) {
                 $cliente = Cliente::where('cliente', $request->cliente)->first();
                 Log::info("---CLIENTE---" . json_encode($cliente));
+            } else {
+                $cliente = Cliente::select('digito')->where('cliente', $request->cliente)->first();
             }
             $vendedor = Usuario::select('deposito')->find($request->vendedor);
             foreach($request->items as $item) {
