@@ -63,7 +63,7 @@ class NotaController extends Controller
                     'codcidade' => 0,
                     'cidade' => !$turista ? $request->ciudad : $cliente->CIDADE,
                     'telefone' => !$turista ? $request->telefono : $cliente->FONE,
-                    'ruc' => !$turista ? $request->ruc : $cliente->RUC,
+                    'ruc' => !$turista ? '' : $cliente->RUC,
                     'doc' => !$turista ? $request->doc : $cliente->RG,
                     'deposito' => isset($vendedor->DEPOSITO) ? $vendedor->DEPOSITO : $vendedor->deposito,
                     'produto' => $item['producto'],
