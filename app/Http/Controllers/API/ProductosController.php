@@ -16,9 +16,13 @@ class ProductosController extends Controller
 {
     public function index(Request $request)
     {
+        $page = $request->has('page') ? $request->page : 1;
         $productos = Producto::defaultSelect($request->dep)
             ->filtrar($request->producto)
             ->where('COMPOSTO', '<>', 'S')
+            ->orderBy('DESCRICAO', 'ASC')
+            ->limit(20)
+            ->skip(20 * ($page - 1))
             ->get();
         return $productos->map(function($item) {
             $item->foto = url('api/productos/' . $item->produto . '/foto');
