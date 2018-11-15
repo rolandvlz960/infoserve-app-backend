@@ -39,11 +39,10 @@ class Cliente extends Model
     public function scopeFiltrar($q, $cliente)
     {
         if ($cliente) {
-            if (str_contains($cliente, "cod:")) {
-                $q = $q->where('cliente', '=', str_replace("cod:", "", $cliente));
+            if (is_numeric($cliente)) {
+                $q = $q->where('cliente', '=', $cliente);
             } else {
-                $q = $q->where('cliente', '=', $cliente)
-                ->orWhere('nome', 'like', '%'. $cliente .'%');
+                $q = $q->where('nome', 'like', '%'. $cliente .'%');
             }
         }
         return $q;

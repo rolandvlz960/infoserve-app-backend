@@ -38,11 +38,10 @@ class Producto extends Model
     public function scopeFiltrar($q, $prod)
     {
         if ($prod) {
-            if (str_contains($prod, "cod:")) {
-                $q = $q->where('digito', '=', str_replace("cod:", "", $prod));
+            if (is_numeric($prod)) {
+                $q = $q->where('digito', '=', $prod);
             } else {
-                $q = $q->where('digito', '=', $prod)
-                    ->orWhere('descricao', 'like', '%'. $prod .'%');
+                $q = $q->where('descricao', 'like', '%'. $prod .'%');
             }
         }
         return $q;
