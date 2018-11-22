@@ -24,10 +24,14 @@ class ProductosController extends Controller
             ->limit(20)
             ->skip(20 * ($page - 1))
             ->get();
-        return $productos->map(function($item) {
+        $res = $productos->map(function($item) {
             $item->foto = url('api/productos/' . $item->produto . '/foto');
             return $item;
         });
+        return [
+            'data' => $res,
+            'query' => $request->producto
+        ];
     }
 
     public function foto($id)
