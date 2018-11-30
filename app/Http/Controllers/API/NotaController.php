@@ -33,9 +33,9 @@ class NotaController extends Controller
         DB::transaction(function() use($request, &$resultNota) {
             // Esto es nota = nota + 1
             // DB::unprepared("lock tables fil120 write");
-            $nota = Nota::max('nota') + 1;
+            Nota::increment('NOTA', 1);
+            $nota = Nota::max('nota');
             $resultNota['nota'] = $nota;
-            DB::insert("UPDATE `fil120` SET NOTA = ?;", [$nota]);
             // DB::unprepared("unlock tables");
             
             // Solo para tests
