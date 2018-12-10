@@ -54,7 +54,7 @@ class ProductosController extends Controller
     {
         $dep = $request->dep;
         $res = Producto::where('produto', $id)
-        ->where('dep01', '>', 0)
+        ->where("dep$dep", '>', 0)
         ->whereRaw("bloq_dep$dep < dep$dep")
         ->update([
             "bloq_dep$dep" => DB::raw("bloq_dep$dep + 1"),
@@ -70,7 +70,7 @@ class ProductosController extends Controller
         $dep = $request->dep;
         $numDeleted = $request->has('numDeleted') ? $request->numDeleted : 1;
         $res = Producto::where('produto', $id)
-        ->where('bloq_dep01', '>', 0)
+        ->where("bloq_dep$dep", '>', 0)
         ->update([
             "bloq_dep$dep" => DB::raw("bloq_dep$dep - $numDeleted"),
             'bloqapp' => DB::raw("bloqapp - $numDeleted")
