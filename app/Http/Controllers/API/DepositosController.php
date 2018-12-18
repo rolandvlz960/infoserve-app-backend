@@ -14,6 +14,7 @@ class DepositosController extends Controller
             'deposito',
             'nome'
         )->disponible()
+            ->orderBy('deposito', 'asc')
             ->get();
     }
 }
