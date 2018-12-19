@@ -68,7 +68,7 @@ class NotaController extends Controller
                     'telefone' => !$turista ? $request->telefono : $cliente->FONE,
                     'ruc' => !$turista ? '' : $cliente->RUC,
                     'doc' => !$turista ? $request->doc : $cliente->RG,
-                    'deposito' => isset($vendedor->DEPOSITO) ? $vendedor->DEPOSITO : $vendedor->deposito,
+                    'deposito' => $request->deposito,
                     'produto' => $item['producto'],
                     'prodkit' => 'N',
                     'quantidade' => $item['cantidad'],
@@ -104,7 +104,8 @@ class NotaController extends Controller
                     $datetime->format('Y-m-d H:i'),
                     $request->items,
                     $clienteNota,
-                    Usuario::select('numero', 'nome', 'deposito')->find($request->vendedor)
+                    Usuario::select('numero', 'nome', 'deposito')->find($request->vendedor),
+                    $request->deposito
                 );
             }
         });
@@ -128,6 +129,7 @@ class NotaController extends Controller
             $request->fecha,
             $request->items,
             $request->cliente,
+            $request->deposito,
             Usuario::select('numero', 'nome', 'deposito')->find($request->usuario)
         );
         return [
@@ -145,7 +147,8 @@ class NotaController extends Controller
         $fecha,
         $receivedItems,
         $cliente,
-        $usuario
+        $usuario,
+        $deposito
     ) {
         $connector = new NetworkPrintConnector($printerIp, $printerPort);
         $printer = new Printer($connector);
@@ -191,7 +194,7 @@ class NotaController extends Controller
             $printer->text("Cliente: " . $cliente . "\n");
             $printer->text("Usuario: " . $usuario->numero . "-" . $usuario->nome . "\n");
             $printer->text("Numero: " . $nota . "\n");
-            $printer->text("Deposito: " . $usuario->deposito . "\n");
+            $printer->text("Deposito: " . $deposito . "\n");
             $printer->text("================================================\n");
             $printer->text("Codigo    Descrip.\n");
             $printer->text("Cant    Precio    Total\n");
