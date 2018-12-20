@@ -45,7 +45,6 @@ class NotaController extends Controller
             $turista = $request->turista == "n";
             if ($turista) {
                 $cliente = Cliente::where('cliente', $request->cliente)->first();
-                Log::info("---CLIENTE---" . json_encode($cliente));
             } else {
                 $cliente = Cliente::select('digito')->where('cliente', $request->cliente)->first();
             }
@@ -78,8 +77,6 @@ class NotaController extends Controller
                     'autoriza' => 0,
                     'finalizar' => 0,
                     'sr_deleted' => 0,
-                    // 'fotodoc1',
-                    // 'fotodoc2'
                 ];
                 if ($request->has('fotodoc1')) {
                     $datos['fotodoc1'] = base64_decode($request->fotodoc1);
@@ -129,8 +126,8 @@ class NotaController extends Controller
             $request->fecha,
             $request->items,
             $request->cliente,
-            $request->deposito,
-            Usuario::select('numero', 'nome', 'deposito')->find($request->usuario)
+            Usuario::select('numero', 'nome', 'deposito')->find($request->usuario),
+            $request->deposito
         );
         return [
             'msg' => 'OK'
