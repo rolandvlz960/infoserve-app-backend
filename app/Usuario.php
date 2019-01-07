@@ -15,7 +15,7 @@ class Usuario extends Model
         return $q->select(
             'NUMERO',
             'NOME',
-            'DEPOSITO',
+            'SALDODEP as DEPOSITO',
             'SENHA'
         );
     }
