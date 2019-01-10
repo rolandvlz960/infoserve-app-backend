@@ -29,6 +29,7 @@ class ProductosController extends Controller
             if (!is_null($item->fotoProducto) && $item->foto1 != '') {
                 $item->foto = url('api/productos/' . $item->produto . '/foto');
             }
+            unset($item->fotoProducto);
             return $item;
         });
         return [
