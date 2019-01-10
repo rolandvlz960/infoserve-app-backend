@@ -25,7 +25,10 @@ class ProductosController extends Controller
             ->skip(20 * ($page - 1))
             ->get();
         $res = $productos->map(function($item) {
-            $item->foto = url('api/productos/' . $item->produto . '/foto');
+            $item->foto = '';
+            if (!is_null($item->fotoProducto) && $item->foto1 != '') {
+                $item->foto = url('api/productos/' . $item->produto . '/foto');
+            }
             return $item;
         });
         return [

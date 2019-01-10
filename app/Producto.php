@@ -11,6 +11,11 @@ class Producto extends Model
     protected $primaryKey = "digito";
     public $timestamps = false;
 
+    public function fotoProducto()
+    {
+        return $this->hasOne('App\Foto', 'produto', 'produto');
+    }
+
     public function scopeDefaultSelect($q, $dep)
     {
         return $q->select(
@@ -46,4 +51,5 @@ class Producto extends Model
         }
         return $q;
     }
+
 }
