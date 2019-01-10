@@ -26,7 +26,7 @@ class ProductosController extends Controller
             ->get();
         $res = $productos->map(function($item) {
             $item->foto = '';
-            if (!is_null($item->fotoProducto) && $item->foto1 != '') {
+            if (!is_null($item->fotoProducto)) {
                 $item->foto = url('api/productos/' . $item->produto . '/foto');
             }
             unset($item->fotoProducto);
