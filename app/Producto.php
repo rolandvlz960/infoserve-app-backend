@@ -13,7 +13,7 @@ class Producto extends Model
 
     public function fotoProducto()
     {
-        return $this->hasOne('App\Foto', 'PRODUTO', 'PRODUTO');
+        return $this->hasOne('App\Foto', 'produto', 'produto');
     }
 
     public function scopeDefaultSelect($q, $dep)
