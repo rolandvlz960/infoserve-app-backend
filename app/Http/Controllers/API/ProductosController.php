@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Deposito;
 use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use App\Http\Controllers\Controller;
@@ -52,6 +53,18 @@ class ProductosController extends Controller
         } catch(ModelNotFoundException $e) {
             return '';
         }
+    }
+
+    public function stocks($producto)
+    {
+        $depositos = Deposito::disponible()
+            ->select('deposito')
+            ->orderBy('deposito', 'asc')
+            ->pluck('deposito')
+            ->toArray();
+        return Producto::stocksSelect($depositos)
+            ->where('produto', '=', $producto)
+            ->first();
     }
 
     public function incQtt($id, Request $request)
