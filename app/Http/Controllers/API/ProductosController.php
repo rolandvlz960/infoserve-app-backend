@@ -58,13 +58,15 @@ class ProductosController extends Controller
     public function stocks($producto)
     {
         $depositos = Deposito::disponible()
-            ->select('deposito')
+            ->select('deposito', 'nome')
             ->orderBy('deposito', 'asc')
-            ->pluck('deposito')
-            ->toArray();
-        return Producto::stocksSelect($depositos)
-            ->where('produto', '=', $producto)
-            ->first();
+            ->get();
+        return [
+            'stocks' => Producto::stocksSelect($depositos->pluck('deposito')->toArray())
+                ->where('produto', '=', $producto)
+                ->first(),
+            'depositos' => $depositos
+        ];
     }
 
     public function incQtt($id, Request $request)

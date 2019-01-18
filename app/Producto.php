@@ -44,12 +44,8 @@ class Producto extends Model
     {
         foreach ($depositos as $index => $deposito) {
             $deposito = $deposito < 10 ? '0' . intval($deposito) : intval($deposito);
-            $depositos[$index] = $deposito;
             $q = $q->addSelect(DB::raw('dep' . $deposito . ' - bloq_dep' . $deposito . ' as ctd_' . $deposito));
         }
-        $q = $q->addSelect(
-            DB::raw('"' . implode($depositos, '|') . '" as depositos')
-        );
         return $q;
     }
 
