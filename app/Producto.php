@@ -4,6 +4,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 use DB;
+use Illuminate\Http\Request;
 
 class Producto extends Model
 {
@@ -57,6 +58,23 @@ class Producto extends Model
             } else {
                 $q = $q->where('descricao', 'like', '%'. $prod .'%');
             }
+        }
+        return $q;
+    }
+
+    public function scopeFiltrarTipo($q, Request $request)
+    {
+        if ($request->has('type')) {
+            $filterTypes = [
+                'codigo' => 'produto',
+                'descripcion' => 'descricao',
+                'referencia' => 'referencia',
+            ];
+            $query = $request->query;
+            $filtroSeleccionado = $request->has('type') ? $request->type : "codigo";
+            $operator = $filtroSeleccionado == 'codigo' ? '=' : 'like';
+            $like = $filtroSeleccionado == 'codigo' ? '' : '%';
+            $q = $q->where($filterTypes[$filtroSeleccionado], $operator, $like . $query . $like);
         }
         return $q;
     }

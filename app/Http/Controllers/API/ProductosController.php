@@ -20,6 +20,7 @@ class ProductosController extends Controller
         $page = $request->has('page') ? $request->page : 1;
         $productos = Producto::defaultSelect($request->dep)
             ->filtrar($request->producto)
+            ->filtrarTipo($request)
             ->where('COMPOSTO', '<>', 'S')
             ->orderBy('DESCRICAO', 'ASC')
             ->limit(20)
