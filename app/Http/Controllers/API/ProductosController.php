@@ -36,7 +36,7 @@ class ProductosController extends Controller
         });
         return [
             'data' => $res,
-            'query' => $request->producto
+            'query' => $request->has('producto') ? $request->producto : $request->q
         ];
     }
 
