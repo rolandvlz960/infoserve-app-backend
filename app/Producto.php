@@ -70,7 +70,7 @@ class Producto extends Model
                 'descripcion' => 'descricao',
                 'referencia' => 'referencia',
             ];
-            $query = $request->query;
+            $query = $request->q;
             $filtroSeleccionado = $request->has('type') ? $request->type : "codigo";
             $operator = $filtroSeleccionado == 'codigo' ? '=' : 'like';
             $like = $filtroSeleccionado == 'codigo' ? '' : '%';
