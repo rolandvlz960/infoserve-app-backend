@@ -82,10 +82,7 @@ class Producto extends Model
     public function scopeBuscarCodigoBarra($q, Request $request)
     {
         if ($request->has('q')) {
-            $q = $q->where('produto', '=', $request->q)
-                ->orWhere('descricao', '=', $request->q)
-                ->orWhere('referencia', '=', $request->q)
-                ->orWhere('referencia', '=', $request->q)
+            $q = $q->where('referencia', '=', $request->q)
                 ->orWhere('subrefere', '=', $request->q)
                 ->orWhere('subrefer01', '=', $request->q);
         }
