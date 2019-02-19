@@ -19,4 +19,9 @@ class BarcodeController extends Controller
             ->buscarCodigoBarra($request)
             ->get();
     }
+
+    public function save(Request $request)
+    {
+        return response(200);
+    }
 }

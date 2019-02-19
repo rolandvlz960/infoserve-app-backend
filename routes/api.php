@@ -31,6 +31,7 @@ Route::get('productos/{id}/foto', 'API\ProductosController@foto');
 Route::post('productos/inc/{id}', 'API\ProductosController@incQtt');
 Route::post('productos/dec/{id}', 'API\ProductosController@decQtt');
 Route::get('productos-barcode', 'API\BarcodeController@index');
+Route::post('productos-barcode/save', 'API\BarcodeController@save');
 
 Route::get('clientes', 'API\ClientesController@index');
 Route::get('monedas', 'API\MonedasController@index');
