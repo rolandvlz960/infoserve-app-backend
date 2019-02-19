@@ -11,7 +11,7 @@ class BarcodeController extends Controller
 {
     public function index(Request $request)
     {
-        Log::i('CODIGO DE BARRA: ' . $request->q);
+        Log::info('CODIGO DE BARRA: ' . $request->q);
         return Producto::select(
             'produto',
             'digito',
