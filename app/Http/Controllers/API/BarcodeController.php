@@ -17,6 +17,6 @@ class BarcodeController extends Controller
             'descricao'
         )
             ->buscarCodigoBarra($request)
-            ->first();
+            ->get();
     }
 }
