@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Colecta;
 use App\Producto;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class BarcodeController extends Controller
@@ -16,7 +18,9 @@ class BarcodeController extends Controller
             'produto',
             'digito',
             'referencia',
-            'descricao'
+            'descricao',
+            'subrefere',
+            'subrefer01'
         )
             ->buscarCodigoBarra($request)
             ->get();
@@ -24,6 +28,25 @@ class BarcodeController extends Controller
 
     public function save(Request $request)
     {
+        $ultimaNota = Colecta::orderBy('NOTA', 'desc')->first();
+        $numNota = 1;
+        if (!is_null($ultimaNota)) {
+            $numNota = $ultimaNota->NOTA + 1;
+        }
+        if ($request->has('items')) {
+            foreach ($request->items as $item) {
+                Colecta::create([
+                    'NOTA' => $numNota + 1,
+                    'PRODUTO' => $item['producto'],
+                    'USUARIO' => $request->usuario,
+                    'DEPOSITO' => $request->deposito,
+                    'OPERACAO' => $request->operacion,
+                    'QUANTIDADE' => $item['cantidad'],
+                    'DATA' => DB::raw('NOW()'),
+                    'HORA' => DB::raw("DATE_FORMAT(NOW(), '%H:%i:%s')"),
+                ]);
+            }
+        }
         return response(200);
     }
 }
