@@ -5,11 +5,13 @@ namespace App\Http\Controllers\API;
 use App\Producto;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Log;
 
 class BarcodeController extends Controller
 {
     public function index(Request $request)
     {
+        Log::i('CODIGO DE BARRA: ' . $request->q);
         return Producto::select(
             'produto',
             'digito',
