@@ -30,7 +30,7 @@ class BarcodeController extends Controller
     {
         $transactionOk = false;
         DB::transaction(function() use($request, &$transactionOk) {
-            $ultimaNota = Colecta::orderBy('NOTA', 'desc')->first();
+            $ultimaNota = Colecta::where('OPERACAO', '=', $request->operacion)->orderBy('NOTA', 'desc')->first();
             $numNota = 1;
             if (!is_null($ultimaNota)) {
                 $numNota = $ultimaNota->NOTA + 1;
