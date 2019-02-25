@@ -38,7 +38,7 @@ class BarcodeController extends Controller
             if ($request->has('items')) {
                 foreach ($request->items as $item) {
                     Colecta::create([
-                        'NOTA' => $numNota + 1,
+                        'NOTA' => $numNota,
                         'PRODUTO' => $item['producto'],
                         'USUARIO' => $request->usuario,
                         'DEPOSITO' => $request->deposito,
