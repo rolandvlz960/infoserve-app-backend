@@ -19,4 +19,11 @@ class Usuario extends Model
             'SENHA'
         );
     }
+
+    public function scopeGerente($q)
+    {
+        return $q->where('GERENTE', '=', 'S')
+            ->where('AUTABXCOST', '<>', '')
+            ->where('ATIVO', '<>', 'N');
+    }
 }

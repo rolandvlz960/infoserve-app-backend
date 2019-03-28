@@ -37,6 +37,8 @@ Route::get('clientes', 'API\ClientesController@index');
 Route::get('monedas', 'API\MonedasController@index');
 Route::get('cambio', 'API\CambioController@index');
 
+Route::get('gerentes', 'API\GerentesController@index');
+
 Route::post('notas', 'API\NotaController@save');
 Route::post('notas/reprint', 'API\NotaController@reprint');
 Route::get('notas/{doc}', 'API\NotaController@findByDoc');
