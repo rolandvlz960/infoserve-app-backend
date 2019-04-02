@@ -42,6 +42,7 @@ class BarcodeController extends Controller
                         'PRODUTO' => $item['producto'],
                         'USUARIO' => $request->usuario,
                         'DEPOSITO' => $request->deposito,
+                        'DESTINO' => $request->depositoTo,
                         'OPERACAO' => $request->operacion,
                         'QUANTIDADE' => $item['cantidad'],
                         'DATA' => DB::raw('NOW()'),

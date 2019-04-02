@@ -14,6 +14,7 @@ class Colecta extends Model
         'PRODUTO',
         'USUARIO',
         'DEPOSITO',
+        'DESTINO',
         'OPERACAO',
         'QUANTIDADE',
         'DATA',
