@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\API;
 
 use App\Cliente;
+use App\Producto;
+use App\Usuario;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -11,13 +13,14 @@ use Illuminate\Support\Facades\Schema;
 
 class DescuentoController extends Controller
 {
-    public function requestDescuento(Request $request)
+    public function open(Request $request)
     {
-        $tableName = 'D050'
-            . DB::select('select CONNECTION_ID() as conn')[0]->conn
-            . 00
+        $pid = DB::select('select CONNECTION_ID() as conn')[0]->conn;
+        $tableName = 'd050'
+            . $pid
+            . '00'
             . rand(10000000, 99999999);
-        Schema::table($tableName, function (Blueprint $table) {
+        Schema::create($tableName, function (Blueprint $table) {
             $table->double('linha', 10, 0)->nullable()->default(null);
             $table->double('cliente', 6, 0)->nullable()->default(null);
             $table->char('clinome', 40)->nullable()->default(null);
@@ -57,15 +60,99 @@ class DescuentoController extends Controller
             $table->double('preco_c', 13, 2)->nullable()->default(null);
             $table->char('ip', 50)->nullable()->default(null);
             $table->bigInteger('sr_recno', true)->unique();
-            $table->char('sr_deleted', 1);
+            $table->char('sr_deleted', 1)->nullable()->default(null);
         });
 
-        $cliente = Cliente::where('numero', '=', $request->idCliente)->first();
+        $cliente = Cliente::where('cliente', '=', $request->idCliente)->first();
+        $producto = Producto::where('produto', '=', $request->idProducto)->first();
+        $gerente = Usuario::where('numero', '=', $request->idGerente)->first();
 
         DB::table($tableName)->insert([
             'linha' => 1,
             'cliente' => $request->idCliente,
-            'cliente' => $cliente->nome,
+            'clinome' => $cliente->nome,
+            'totalvenda' => $request->precoSolicitado * $request->quantidadeProducto,
+            'totallucro' =>
+                ($request->precoSolicitado * $request->quantidadeProducto)
+                - ($producto->CUSTOCIF * $request->quantidadeProducto),
+            'totalmarge' =>
+                ($request->precoSolicitado * $request->quantidadeProducto)
+                - ($producto->CUSTOCIF * $request->quantidadeProducto),
+            'totalquant' => $request->quantidadeProducto,
+            'produto' => $producto->digito,
+            'descricao' => $producto->descricao,
+            'quantidade' => $producto->quantidadeProducto,
+            'preco' => $producto->precoSolicitado,
+            'total' => $request->precoSolicitado * $request->quantidadeProducto,
+            'minimo' => $producto->preco_c,
+            'antpreco' => $producto->precoSolicitado,
+            'nivel' => $cliente->NIVELPRECO,
+            'custo' => $producto->CUSTOCIF,
+            'lucro' =>
+                ($request->precoSolicitado * $request->quantidadeProducto)
+                - ($producto->CUSTOCIF * $request->quantidadeProducto),
+            'margem' =>
+                ($request->precoSolicitado * $request->quantidadeProducto)
+                - ($producto->CUSTOCIF * $request->quantidadeProducto),
+            'status' => '*auto*',
+            'altera' => 'S',
+            'pede' => 0,
+            'taxado' => $cliente->cli_pessoa === 2 ? 'T' : 'N',
+            'clienivel' => $cliente->NIVELPRECO,
+            'preco_c' => $cliente->preco_c,
         ]);
+
+        DB::table('fil580')->insert([
+            'numero' => $request->idVendedor,
+            'usuario' => $request->idCliente,
+            'pid' => $pid,
+            'hora' => DB::raw('time_format(NOW(), "%H:%i:%s")'),
+            'ngerente' => $request->idGerente,
+            'nomegerent' => $gerente->NOME,
+            'status' => 1,
+            'arquivo' => $tableName,
+            'cliente' => 0,
+            'saldo' => 0,
+            'limite' => 0,
+            'vencido' => 0,
+            'vendaspend' => 0,
+            'condpag' => 'V',
+            'totvenda' => 0,
+            'totcusto' => 0,
+            'totlucro' => 0,
+            'totperc' => 0,
+            'tipo' => 1,
+            'descnota' => 0,
+            'operacao' => 1,
+            'vendedor' => $request->idVendedor,
+        ]);
+
+        return [
+            'table' => $tableName
+        ];
+    }
+
+    public function checkDescuento(Request $request)
+    {
+        $arquivo = DB::table($request->tableName)->first();
+        $autorizacion = DB::table('fil580')
+            ->where('arquivo','=', $request->tableName)
+            ->first();
+        $status = $autorizacion->STATUS;
+        $preco = $arquivo->preco;
+
+        if ($status == 2) {
+            DB::table('fil580')
+                ->where('arquivo','=', $request->tableName)
+                ->update([
+                    'sr_deleted' => 'T'
+                ]);
+            Schema::dropIfExists($request->tableName);
+        }
+
+        return [
+            'status' => $status,
+            'preco' => $preco
+        ];
     }
 }

@@ -38,6 +38,8 @@ Route::get('monedas', 'API\MonedasController@index');
 Route::get('cambio', 'API\CambioController@index');
 
 Route::get('gerentes', 'API\GerentesController@index');
+Route::post('descuentos/open', 'API\DescuentoController@open');
+Route::post('descuentos/check', 'API\DescuentoController@checkDescuento');
 
 Route::post('notas', 'API\NotaController@save');
 Route::post('notas/reprint', 'API\NotaController@reprint');

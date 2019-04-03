@@ -78,6 +78,15 @@ return [
             'prefix' => '',
         ],
 
+        'odbc' => [
+            'driver' => 'odbc',
+            'dsn' => env('DB_DATABASE', 'OdbcConnectionName'),
+            'database' => env('DB_DATABASE', 'forge'),
+            'host' => env('DB_HOST', 'localhost'),
+            'username' => env('DB_USERNAME', 'forge'),
+            'password' => env('DB_PASSWORD', ''),
+        ],
+
     ],
 
     /*
