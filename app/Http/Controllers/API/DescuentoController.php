@@ -81,7 +81,7 @@ class DescuentoController extends Controller
             'totalquant' => $request->quantidadeProducto,
             'produto' => $producto->digito,
             'descricao' => $producto->descricao,
-            'quantidade' => $producto->quantidadeProducto,
+            'quantidade' => $request->quantidadeProducto,
             'preco' => $request->precoSolicitado,
             'total' => $request->precoSolicitado * $request->quantidadeProducto,
             'minimo' => $producto->preco_c,
