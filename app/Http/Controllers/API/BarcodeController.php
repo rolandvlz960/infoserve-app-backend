@@ -14,7 +14,9 @@ class BarcodeController extends Controller
     public function index(Request $request)
     {
         Log::info('CODIGO DE BARRA: ' . $request->q);
-        return Producto::select(
+        $dep = $request->has('dep') ? $request->dep : '01';
+        $block = $request->has('block');
+        $productos = Producto::select(
             'produto',
             'digito',
             'referencia',
@@ -22,8 +24,20 @@ class BarcodeController extends Controller
             'subrefere',
             'subrefer01'
         )
-            ->buscarCodigoBarra($request)
-            ->get();
+            ->buscarCodigoBarra($request);
+        if ($block) {
+            $productos = $productos->where("dep$dep", '>', 0)
+                ->whereRaw("dep$dep-bloq_dep$dep >= 1");
+        }
+        $productos = $productos->get();
+        if ($block) {
+            Producto::whereIn('produto', $productos->pluck('produto')->toArray())
+                ->update([
+                    "bloq_dep$dep" => DB::raw("bloq_dep$dep + 1"),
+                    'bloqapp' => DB::raw('bloqapp + 1')
+                ]);
+        }
+        return $productos;
     }
 
     public function save(Request $request)

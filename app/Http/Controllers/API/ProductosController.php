@@ -73,11 +73,12 @@ class ProductosController extends Controller
     public function incQtt($id, Request $request)
     {
         $dep = $request->dep;
+        $cant = $request->has('cant') ? $request->cant : 1;
         $res = Producto::where('produto', $id)
         ->where("dep$dep", '>', 0)
-        ->whereRaw("bloq_dep$dep < dep$dep")
+        ->whereRaw("dep$dep-bloq_dep$dep >= $cant")
         ->update([
-            "bloq_dep$dep" => DB::raw("bloq_dep$dep + 1"),
+            "bloq_dep$dep" => DB::raw("bloq_dep$dep + " . $cant),
             'bloqapp' => DB::raw('bloqapp + 1')
         ]);
         return [
