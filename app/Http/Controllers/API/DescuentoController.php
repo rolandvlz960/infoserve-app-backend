@@ -15,6 +15,21 @@ class DescuentoController extends Controller
 {
     public function open(Request $request)
     {
+        $producto = Producto::where('produto', '=', $request->idProducto)->first();
+        $gerente = Usuario::where('numero', '=', $request->idGerente)->first();
+
+        if ($gerente->AUTABXCOST !== 'S' && ($gerente->AUTABXCOST === 'C' && ($request->precoSolicitado < $producto->CUSTOCIF))) {
+            return [
+                'error' => 401
+            ];
+        }
+
+        if ($gerente->PROIVAABCU === 'N' && ($request->precoSolicitado < ($producto->TAXADO_A/1.1))) {
+            return [
+                'error' => 401
+            ];
+        }
+
         $pid = DB::select('select CONNECTION_ID() as conn')[0]->conn;
         $tableName = 'd050'
             . $pid
@@ -64,42 +79,38 @@ class DescuentoController extends Controller
         });
 
         $cliente = Cliente::where('cliente', '=', $request->idCliente)->first();
-        $producto = Producto::where('produto', '=', $request->idProducto)->first();
-        $gerente = Usuario::where('numero', '=', $request->idGerente)->first();
 
+        $valorProd = $request->precoSolicitado * $request->quantidadeProducto;
+        $custoProd = $producto->CUSTOCIF * $request->quantidadeProducto;
         DB::table($tableName)->insert([
             'linha' => 1,
             'cliente' => $request->idCliente,
-            'clinome' => $cliente->nome,
+            'clinome' => $cliente->NOME,
             'totalvenda' => $request->precoSolicitado * $request->quantidadeProducto,
             'totallucro' =>
-                ($request->precoSolicitado * $request->quantidadeProducto)
-                - ($producto->CUSTOCIF * $request->quantidadeProducto),
+                $valorProd - $custoProd,
             'totalmarge' =>
-                ($request->precoSolicitado * $request->quantidadeProducto)
-                - ($producto->CUSTOCIF * $request->quantidadeProducto),
+                ($valorProd - $custoProd) / $custoProd * 100,
             'totalquant' => $request->quantidadeProducto,
-            'produto' => $producto->digito,
-            'descricao' => $producto->descricao,
+            'produto' => $producto->DIGITO,
+            'descricao' => $producto->DESCRICAO,
             'quantidade' => $request->quantidadeProducto,
             'preco' => $request->precoSolicitado,
             'total' => $request->precoSolicitado * $request->quantidadeProducto,
-            'minimo' => $producto->preco_c,
+            'minimo' => $producto->PRECO_C,
             'antpreco' => $request->precoSolicitado,
             'nivel' => $cliente->NIVELPRECO,
             'custo' => $producto->CUSTOCIF,
             'lucro' =>
-                ($request->precoSolicitado * $request->quantidadeProducto)
-                - ($producto->CUSTOCIF * $request->quantidadeProducto),
+                $valorProd - $custoProd,
             'margem' =>
-                ($request->precoSolicitado * $request->quantidadeProducto)
-                - ($producto->CUSTOCIF * $request->quantidadeProducto),
+                $valorProd - $custoProd,
             'status' => '*auto*',
             'altera' => 'S',
             'pede' => 0,
-            'taxado' => $cliente->cli_pessoa === 2 ? 'T' : 'N',
+            'taxado' => $cliente->CLI_PESSOA === 2 ? 'T' : 'N',
             'clienivel' => $cliente->NIVELPRECO,
-            'preco_c' => $cliente->preco_c,
+            'preco_c' => $producto->PRECO_C,
         ]);
 
         DB::table('fil580')->insert([
@@ -142,17 +153,25 @@ class DescuentoController extends Controller
         $preco = $arquivo->preco;
 
         if ($status == 2) {
-            DB::table('fil580')
-                ->where('arquivo','=', $request->tableName)
-                ->update([
-                    'sr_deleted' => 'T'
-                ]);
-            Schema::dropIfExists($request->tableName);
+            $this->dropDescuento($request);
         }
 
         return [
             'status' => $status,
             'preco' => $preco
+        ];
+    }
+
+    public function dropDescuento(Request $request)
+    {
+        DB::table('fil580')
+            ->where('arquivo','=', $request->tableName)
+            ->update([
+                'sr_deleted' => 'T'
+            ]);
+        Schema::dropIfExists($request->tableName);
+        return [
+            'status' => 'ok'
         ];
     }
 }

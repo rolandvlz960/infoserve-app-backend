@@ -23,7 +23,7 @@ class Usuario extends Model
     public function scopeGerente($q)
     {
         return $q->where('GERENTE', '=', 'S')
-            ->where('AUTABXCOST', '<>', '')
+//            ->where('AUTABXCOST', '<>', '')
             ->where('ATIVO', '<>', 'N');
     }
 }
