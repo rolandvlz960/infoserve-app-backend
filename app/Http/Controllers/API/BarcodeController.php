@@ -14,7 +14,7 @@ class BarcodeController extends Controller
     public function index(Request $request)
     {
         Log::info('CODIGO DE BARRA: ' . $request->q);
-        $dep = $request->has('dep') ? $request->dep : '01';
+        $dep = $request->has('dep') ? ( $request->dep < 10 ? ( '0' . $request->dep ) : $request->dep ) : '01';
         $block = $request->has('block');
         $productos = Producto::select(
             'produto',
