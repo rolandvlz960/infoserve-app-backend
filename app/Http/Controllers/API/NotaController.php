@@ -30,14 +30,16 @@ class NotaController extends Controller
             'mensagem_2' => '',
             'resumida' => ''
         ];
-        DB::transaction(function() use($request, &$resultNota) {
+
+        Nota::increment('NOTA', 1);
+        $nota = Nota::max('nota');
+        $data = DB::select("SELECT ADDDATE( encerra, INTERVAL 1 DAY) as data from fil120 order by data desc limit 1;")[0]->data;
+
+        DB::transaction(function() use($request, &$resultNota, $nota, $data) {
             // Esto es nota = nota + 1
-            // DB::unprepared("lock tables fil120 write");
-            Nota::increment('NOTA', 1);
-            $nota = Nota::max('nota');
+
             $resultNota['nota'] = $nota;
-            // DB::unprepared("unlock tables");
-            
+
             // Solo para tests
             // $nota = Nota::find(2288);
             $cliente = null;
@@ -56,7 +58,7 @@ class NotaController extends Controller
                     'notas' => $nota,
                     'mobiid' => 0,
                     'mobicli' => 0,
-                    'data' => DB::select("SELECT ADDDATE( encerra, INTERVAL 1 DAY) as data from fil120 order by data desc limit 1;")[0]->data,
+                    'data' => $data,
                     'hora' => DB::select("SELECT TIME_FORMAT(CURTIME(), '%h:%i:%s') AS hora")[0]->hora,
                     'cliente' => $request->cliente,
                     'clinovo' => $turista ? 'S' : 'N',
