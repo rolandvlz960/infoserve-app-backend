@@ -162,6 +162,8 @@ return [
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
 
+        Abram\Odbc\ODBCServiceProvider::class,
+
     ],
 
     /*

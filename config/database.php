@@ -80,7 +80,7 @@ return [
 
         'odbc' => [
             'driver' => 'odbc',
-            'dsn' => env('DB_DATABASE', 'OdbcConnectionName'),
+            'dsn' => env('DB_DSN', 'OdbcConnectionName'),
             'database' => env('DB_DATABASE', 'forge'),
             'host' => env('DB_HOST', 'localhost'),
             'username' => env('DB_USERNAME', 'forge'),
