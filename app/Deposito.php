@@ -12,4 +12,9 @@ class Deposito extends Model
     {
         return $q->where('tipo', '=', 'D');
     }
+
+    public function scopeParaTransferencia($q)
+    {
+        return $q->where('tipo', '=', 'D')->orWhere('tipo', '=', 'I');
+    }
 }

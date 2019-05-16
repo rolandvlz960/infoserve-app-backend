@@ -8,13 +8,17 @@ use App\Http\Controllers\Controller;
 
 class DepositosController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        return Deposito::select(
+        $q = Deposito::select(
             'deposito',
             'nome'
-        )->disponible()
-            ->orderBy('deposito', 'asc')
-            ->get();
+        )->orderBy('deposito', 'asc');
+        if ($request->has('paraTransferencia')) {
+            $q = $q->paraTransferencia();
+        } else {
+            $q = $q->disponible();
+        }
+        return $q->get();
     }
 }
