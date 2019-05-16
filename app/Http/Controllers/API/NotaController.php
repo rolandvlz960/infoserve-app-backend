@@ -31,8 +31,12 @@ class NotaController extends Controller
             'resumida' => ''
         ];
 
-        Nota::increment('NOTA', 1);
-        $nota = Nota::max('nota');
+        $nota = null;
+
+        DB::transaction(function() use (&$nota) {
+            Nota::increment('NOTA', 1);
+            $nota = Nota::max('nota');
+        });
         $data = DB::select("SELECT ADDDATE( encerra, INTERVAL 1 DAY) as data from fil120 order by data desc limit 1;")[0]->data;
 
         DB::transaction(function() use($request, &$resultNota, $nota, $data) {
