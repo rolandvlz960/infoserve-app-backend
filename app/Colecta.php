@@ -19,5 +19,6 @@ class Colecta extends Model
         'QUANTIDADE',
         'DATA',
         'HORA',
+        'sr_deleted',
     ];
 }

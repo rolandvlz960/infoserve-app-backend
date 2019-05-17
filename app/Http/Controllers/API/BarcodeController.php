@@ -61,6 +61,7 @@ class BarcodeController extends Controller
                         'QUANTIDADE' => $item['cantidad'],
                         'DATA' => DB::raw('NOW()'),
                         'HORA' => DB::raw("DATE_FORMAT(NOW(), '%H:%i:%s')"),
+                        'sr_deleted' => ''
                     ]);
                 }
             }
