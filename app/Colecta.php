@@ -17,6 +17,7 @@ class Colecta extends Model
         'DESTINO',
         'OPERACAO',
         'QUANTIDADE',
+        'STATUS',
         'DATA',
         'HORA',
         'sr_deleted',
