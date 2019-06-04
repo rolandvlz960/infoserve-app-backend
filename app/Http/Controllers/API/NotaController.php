@@ -224,6 +224,7 @@ class NotaController extends Controller
                 $printer->text("                       \n");
                 $printer->text("                       \n");
                 $this->cut($printer);
+                $printer->send();
                 $printer->close();
             }
         } catch (\Exception $e) {
