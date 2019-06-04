@@ -17,6 +17,7 @@ use App\Producto;
 use App\ItemNota;
 use App\Cliente;
 use App\Moneda;
+use Posprint\Printers\Bematech;
 
 class NotaController extends Controller
 {
@@ -154,8 +155,10 @@ class NotaController extends Controller
         $deposito
     ) {
         try {
-            $connector = new NetworkPrintConnector($printerIp, $printerPort);
-            $printer = new Printer($connector);
+//            $connector = new NetworkPrintConnector($printerIp, $printerPort);
+//            $printer = new Printer($connector);
+            $connector = new \Posprint\Connectors\Network($printerIp, $printerPort);
+            $printer = new \Posprint\Printers\Bematech($connector);
             $total = 0;
             $items = [];
             $cant = 0;
@@ -220,8 +223,7 @@ class NotaController extends Controller
                 $printer->text("                       \n");
                 $printer->text("                       \n");
                 $printer->text("                       \n");
-                $printer->feed(1);
-                $this->cut($printerIp, $printerPort);
+                $this->cut($printer);
                 $printer->close();
             }
         } catch (\Exception $e) {
@@ -229,15 +231,21 @@ class NotaController extends Controller
         }
     }
 
-    private function cut($host, $port)
+    private function cut(Bematech $printer)
     {
-        $connector = new \Posprint\Connectors\Network($host, $port);
-        $printer = new \Posprint\Printers\Bematech($connector);
         $printer->lineFeed(2);
         $printer->cut();
-        $printer->send();
-        $printer->close();
     }
+
+//    private function cut($host, $port)
+//    {
+//        $connector = new \Posprint\Connectors\Network($host, $port);
+//        $printer = new \Posprint\Printers\Bematech($connector);
+//        $printer->lineFeed(2);
+//        $printer->cut();
+//        $printer->send();
+//        $printer->close();
+//    }
 
     /**
      * Búsqueda de datos de formulario por num de cédula
