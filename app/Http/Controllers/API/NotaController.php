@@ -191,10 +191,7 @@ class NotaController extends Controller
                     $cant += $item['cantidad'];
                     $total = $total + ($item['precio'] * $item['cantidad']);
                 }
-                $printer->text("                       \n");
-                $printer->text("                       \n");
-                $printer->text("                       \n");
-                $printer->text("------------------------------------------------\n");
+                $printer->text("------------------------------------------\n");
                 $printer->text("VENTAS\n");
                 $printer->text("PEDIDO DE VENTAS\n");
                 $printer->text("Fecha de emision: " . $datetime->format('d/m/Y H:i') . "\n");
@@ -202,20 +199,20 @@ class NotaController extends Controller
                 $printer->text("Usuario: " . $usuario->numero . "-" . $usuario->nome . "\n");
                 $printer->text("Numero: " . $nota . "\n");
                 $printer->text("Deposito: " . $deposito . "\n");
-                $printer->text("================================================\n");
+                $printer->text("==========================================\n");
                 $printer->text("Codigo    Descrip.\n");
                 $printer->text("Cant    Precio    Total\n");
                 foreach ($items as $item) {
                     $printer->text($item[0] . "\n");
                     $printer->text($item[1] . "\n");
                 }
-                $printer->text("------------------------------------------------\n");
+                $printer->text("------------------------------------------\n");
                 $printer->text("Total: " . $sigla . " " . number_format($total, 2) . "    Items: " . $cant . "\n");
-                $printer->text("------------------------------------------------\n");
+                $printer->text("------------------------------------------\n");
                 $printer->text("Total: " . $sigla . " " . number_format($total, 2) . "\n");
                 $printer->text("Desc: 0\n");
                 $printer->text("Total: " . $sigla . " " . number_format($total, 2) . "\n");
-                $printer->text("================================================\n");
+                $printer->text("==========================================\n");
                 $printer->text($mensagens->MENSAGEM_1 . "\n");
                 $printer->text($mensagens->MENSAGEM_2 . "\n");
                 $printer->text("                       \n");
