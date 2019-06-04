@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Jobs\PrintNota;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Log;
@@ -154,96 +155,17 @@ class NotaController extends Controller
         $usuario,
         $deposito
     ) {
-        try {
-//            $connector = new NetworkPrintConnector($printerIp, $printerPort);
-//            $printer = new Printer($connector);
-            $connector = new \Posprint\Connectors\Network($printerIp, $printerPort);
-            $printer = new \Posprint\Printers\Bematech($connector);
-            $total = 0;
-            $items = [];
-            $cant = 0;
-            $mensagens = DB::table('FIL050')->select('MENSAGEM_1', 'MENSAGEM_2', 'NTRESTABLET')->first();
-            if ($mensagens->NTRESTABLET == 'S') {
-                $printer->text("                       \n");
-                $printer->text("                       \n");
-                $printer->text("                       \n");
-                $printer->text("                       \n");
-                $printer->text("                       \n");
-                $printer->text("                       \n");
-                $printer->text("Numero: " . $nota . "\n");
-                $printer->text("                       \n");
-                $printer->text("                       \n");
-                $printer->text("                       \n");
-                $printer->text("                       \n");
-                $printer->text("                       \n");
-                $printer->text("                       \n");
-                $printer->close();
-            } else {
-                $sigla = Moneda::first()->SIGLA;
-                $datetime = Carbon::createFromFormat("Y-m-d H:i", $fecha);
-                $mensagens = DB::table('FIL050')->select('MENSAGEM_1', 'MENSAGEM_2')->first();
-                foreach ($receivedItems as $item) {
-                    $res = Producto::select('digito', 'descricao')->where('produto', $item['producto'])->first();
-                    $items[] = [
-                        $res->digito . "    " . $res->descricao,
-                        $item['cantidad'] . ' x ' . $sigla . " " . number_format($item['precio'], 2) . "    " . $sigla . ' ' . number_format($item['precio'] * $item['cantidad'], 2)
-                    ];
-                    $cant += $item['cantidad'];
-                    $total = $total + ($item['precio'] * $item['cantidad']);
-                }
-                $printer->text("------------------------------------------\n");
-                $printer->text("VENTAS\n");
-                $printer->text("PEDIDO DE VENTAS\n");
-                $printer->text("Fecha de emision: " . $datetime->format('d/m/Y H:i') . "\n");
-                $printer->text("Cliente: " . $cliente . "\n");
-                $printer->text("Usuario: " . $usuario->numero . "-" . $usuario->nome . "\n");
-                $printer->text("Numero: " . $nota . "\n");
-                $printer->text("Deposito: " . $deposito . "\n");
-                $printer->text("==========================================\n");
-                $printer->text("Codigo    Descrip.\n");
-                $printer->text("Cant    Precio    Total\n");
-                foreach ($items as $item) {
-                    $printer->text($item[0] . "\n");
-                    $printer->text($item[1] . "\n");
-                }
-                $printer->text("------------------------------------------\n");
-                $printer->text("Total: " . $sigla . " " . number_format($total, 2) . "    Items: " . $cant . "\n");
-                $printer->text("------------------------------------------\n");
-                $printer->text("Total: " . $sigla . " " . number_format($total, 2) . "\n");
-                $printer->text("Desc: 0\n");
-                $printer->text("Total: " . $sigla . " " . number_format($total, 2) . "\n");
-                $printer->text("==========================================\n");
-                $printer->text($mensagens->MENSAGEM_1 . "\n");
-                $printer->text($mensagens->MENSAGEM_2 . "\n");
-                $printer->text("                       \n");
-                $printer->text("                       \n");
-                $printer->text("                       \n");
-                $printer->text("                       \n");
-                $printer->text("                       \n");
-                $this->cut($printer);
-                $printer->send();
-                $printer->close();
-            }
-        } catch (\Exception $e) {
-            //
-        }
+        PrintNota::dispatch(
+            $printerIp,
+            $printerPort,
+            $nota,
+            $fecha,
+            $receivedItems,
+            $cliente,
+            $usuario,
+            $deposito
+        );
     }
-
-    private function cut(Bematech $printer)
-    {
-        $printer->lineFeed(2);
-        $printer->cut();
-    }
-
-//    private function cut($host, $port)
-//    {
-//        $connector = new \Posprint\Connectors\Network($host, $port);
-//        $printer = new \Posprint\Printers\Bematech($connector);
-//        $printer->lineFeed(2);
-//        $printer->cut();
-//        $printer->send();
-//        $printer->close();
-//    }
 
     /**
      * Búsqueda de datos de formulario por num de cédula
