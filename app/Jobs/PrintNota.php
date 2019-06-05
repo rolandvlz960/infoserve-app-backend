@@ -11,6 +11,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Posprint\Connectors\Network;
 use Posprint\Printers\Bematech;
 
@@ -137,7 +138,7 @@ class PrintNota implements ShouldQueue
                 $printer->close();
             }
         } catch (\Exception $e) {
-            abort(505, $e->getMessage());
+            Log::error($e->getMessage());
         }
     }
 
