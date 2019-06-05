@@ -41,22 +41,25 @@ class NotaController extends Controller
         });
         $data = DB::select("SELECT ADDDATE( encerra, INTERVAL 1 DAY) as data from fil120 order by data desc limit 1;")[0]->data;
 
-        DB::transaction(function() use($request, &$resultNota, $nota, $data) {
+        $cliente = null;
+        // Log::info('QERY'. json_encode($request->all()));
+        $turista = $request->turista == "n";
+        if ($turista) {
+            $cliente = Cliente::where('cliente', $request->cliente)->first();
+        } else {
+            $cliente = Cliente::select('digito')->where('cliente', $request->cliente)->first();
+        }
+
+        $vendedor = json_decode(json_encode(Usuario::select('numero', 'nome', 'deposito')->find($request->vendedor)));
+
+        DB::transaction(function() use($request, &$resultNota, $nota, $data, $turista, $cliente) {
             // Esto es nota = nota + 1
 
             $resultNota['nota'] = $nota;
 
             // Solo para tests
             // $nota = Nota::find(2288);
-            $cliente = null;
-            // Log::info('QERY'. json_encode($request->all()));
-            $turista = $request->turista == "n";
-            if ($turista) {
-                $cliente = Cliente::where('cliente', $request->cliente)->first();
-            } else {
-                $cliente = Cliente::select('digito')->where('cliente', $request->cliente)->first();
-            }
-            $vendedor = Usuario::select('deposito')->find($request->vendedor);
+
             foreach($request->items as $item) {
                 $datos = [
                     'vendedor' => $request->vendedor,
@@ -98,22 +101,25 @@ class NotaController extends Controller
 
                 Producto::where('produto', $item['producto'])->update(['quant_pend' => DB::raw('quant_pend + 1')]);
             }
-            if ($request->has('printerIp') && $request->printerIp !== '') {
-                $clienteNota = (!$turista ? $cliente->digito . '-' . strtoupper($request->nombre) : $cliente->DIGITO . '-'  . strtoupper($cliente->NOME));
-                $hora = $resultNota['fecha'] . ' ' . $resultNota['hora'];
-                $datetime = Carbon::createFromFormat('Y-m-d H:i:s', $hora);
-                $this->printNota(
-                    $request->printerIp,
-                    $request->printerPort,
-                    $resultNota['nota'] . "T",
-                    $datetime->format('Y-m-d H:i'),
-                    $request->items,
-                    $clienteNota,
-                    Usuario::select('numero', 'nome', 'deposito')->find($request->vendedor),
-                    $request->deposito
-                );
-            }
+
         });
+
+        if ($request->has('printerIp') && $request->printerIp !== '') {
+            $clienteNota = (!$turista ? $cliente->digito . '-' . strtoupper($request->nombre) : $cliente->DIGITO . '-'  . strtoupper($cliente->NOME));
+            $hora = $resultNota['fecha'] . ' ' . $resultNota['hora'];
+            $datetime = Carbon::createFromFormat('Y-m-d H:i:s', $hora);
+            $this->printNota(
+                $request->printerIp,
+                $request->printerPort,
+                $resultNota['nota'] . "T",
+                $datetime->format('Y-m-d H:i'),
+                $request->items,
+                $clienteNota,
+                $vendedor,
+                $request->deposito
+            );
+        }
+
         $mensagens = DB::table('FIL050')->select('MENSAGEM_1', 'MENSAGEM_2', 'NTRESTABLET')->first();
         $resultNota['mensagem_1'] .= $mensagens->MENSAGEM_1;
         $resultNota['mensagem_2'] .= $mensagens->MENSAGEM_2;
