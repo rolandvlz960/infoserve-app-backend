@@ -133,7 +133,7 @@ class NotaController extends Controller
      */
     public function reprint(Request $request)
     {
-        Log::info('request_vendedor', $request->vendedor);
+//        Log::info('request_vendedor', $request->vendedor);
         Log::info('data', $request->all());
 //        $usuario = json_decode(json_encode(Usuario::select('numero', 'nome', 'deposito')->find($request->vendedor)));
 //        Log::info('user', $usuario);
