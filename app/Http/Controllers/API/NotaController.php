@@ -134,6 +134,7 @@ class NotaController extends Controller
     public function reprint(Request $request)
     {
         $usuario = json_decode(json_encode(Usuario::select('numero', 'nome', 'deposito')->find($request->vendedor)));
+        Log::info('user', $usuario);
         $this->printNota(
             $request->printerIp,
             $request->printerPort,

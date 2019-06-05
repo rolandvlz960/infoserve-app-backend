@@ -138,7 +138,7 @@ class PrintNota implements ShouldQueue
                 $printer->close();
             }
         } catch (\Exception $e) {
-            Log::error($e->getTraceAsString());
+//            Log::error($e->getTraceAsString());
         }
     }
 
