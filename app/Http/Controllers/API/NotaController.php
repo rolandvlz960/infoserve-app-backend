@@ -140,7 +140,7 @@ class NotaController extends Controller
             $request->fecha,
             $request->items,
             $request->cliente,
-            Usuario::select('numero', 'nome', 'deposito')->find($request->usuario),
+            json_decode(json_encode(Usuario::select('numero', 'nome', 'deposito')->find($request->vendedor))),
             $request->deposito
         );
         return [
