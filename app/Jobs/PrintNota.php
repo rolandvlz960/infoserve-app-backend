@@ -137,7 +137,7 @@ class PrintNota implements ShouldQueue
                 $printer->close();
             }
         } catch (\Exception $e) {
-            //
+            abort(505, $e->getMessage());
         }
     }
 
