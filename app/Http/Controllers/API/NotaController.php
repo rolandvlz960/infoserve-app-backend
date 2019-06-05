@@ -133,20 +133,18 @@ class NotaController extends Controller
      */
     public function reprint(Request $request)
     {
-//        Log::info('request_vendedor', $request->vendedor);
-        Log::info('data', $request->all());
-//        $usuario = json_decode(json_encode(Usuario::select('numero', 'nome', 'deposito')->find($request->vendedor)));
-//        Log::info('user', $usuario);
-//        $this->printNota(
-//            $request->printerIp,
-//            $request->printerPort,
-//            $request->nota,
-//            $request->fecha,
-//            $request->items,
-//            $request->cliente,
-//            $usuario,
-//            $request->deposito
-//        );
+        $idVendedor = $request->has('vendedor') ? $request->vendedor : $request->usuario;
+        $usuario = json_decode(json_encode(Usuario::select('numero', 'nome', 'deposito')->find($idVendedor)));
+        $this->printNota(
+            $request->printerIp,
+            $request->printerPort,
+            $request->nota,
+            $request->fecha,
+            $request->items,
+            $request->cliente,
+            $usuario,
+            $request->deposito
+        );
         return [
             'msg' => 'OK'
         ];
