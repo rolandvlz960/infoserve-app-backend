@@ -41,6 +41,27 @@ class Producto extends Model
         );
     }
 
+    public function scopeStockAvailable($q, $dep)
+    {
+        $depStr = $dep < 10 ? ( "0" . $dep ) : $dep;
+        return $q->where($depStr, '>', 0);
+    }
+
+    public function scopeDefaultSelectPreco($q, $dep, $preco)
+    {
+        return $q->select(
+            'produto',
+            'digito',
+            'referencia',
+            'descricao',
+            DB::raw("$preco as preco"),
+            DB::raw('dep' . $dep . ' - bloq_dep' . $dep . ' as ctd')
+            // 'bloqapp',
+            // 'dep01',
+            // 'bloq_dep01'
+        );
+    }
+
     public function scopeStocksSelect($q, $depositos)
     {
         foreach ($depositos as $index => $deposito) {
@@ -48,6 +69,11 @@ class Producto extends Model
             $q = $q->addSelect(DB::raw('dep' . $deposito . ' - bloq_dep' . $deposito . ' as ctd_' . $deposito));
         }
         return $q;
+    }
+
+    public function scopeProductosKit($q)
+    {
+        return $q->where('composto', '=', 'S');
     }
 
     public function scopeFiltrar($q, $prod)

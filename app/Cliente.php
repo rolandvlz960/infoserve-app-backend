@@ -16,7 +16,12 @@ class Cliente extends Model
             'cliente',
             'digito',
             'cli_pessoa',
-            'nome'
+            'nome',
+            'ruc',
+            'cidade',
+            'rg',
+            'fone',
+            'endereco'
         );
     }
 
@@ -34,6 +39,11 @@ class Cliente extends Model
             return $q->where('cli_pessoa', '<>', 2);
         }
         return $q;
+    }
+
+    public function scopeDelVendedor($q, $vendedor)
+    {
+        return $q->where('vendedor', '=', $vendedor);
     }
 
     public function scopeFiltrar($q, $cliente)
