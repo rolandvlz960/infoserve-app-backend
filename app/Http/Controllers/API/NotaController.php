@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Jobs\PrintNota;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Log;
@@ -17,6 +18,7 @@ use App\Producto;
 use App\ItemNota;
 use App\Cliente;
 use App\Moneda;
+use Posprint\Printers\Bematech;
 
 class NotaController extends Controller
 {
@@ -31,26 +33,33 @@ class NotaController extends Controller
             'resumida' => ''
         ];
 
-        Nota::increment('NOTA', 1);
-        $nota = Nota::max('nota');
+        $nota = null;
+
+        DB::transaction(function() use (&$nota) {
+            Nota::increment('NOTA', 1);
+            $nota = Nota::max('nota');
+        });
         $data = DB::select("SELECT ADDDATE( encerra, INTERVAL 1 DAY) as data from fil120 order by data desc limit 1;")[0]->data;
 
-        DB::transaction(function() use($request, &$resultNota, $nota, $data) {
+        $cliente = null;
+        // Log::info('QERY'. json_encode($request->all()));
+        $turista = $request->turista == "n";
+        if ($turista) {
+            $cliente = Cliente::where('cliente', $request->cliente)->first();
+        } else {
+            $cliente = Cliente::select('digito')->where('cliente', $request->cliente)->first();
+        }
+
+        $vendedor = json_decode(json_encode(Usuario::select('numero', 'nome', 'deposito')->find($request->vendedor)));
+
+        DB::transaction(function() use($request, &$resultNota, $nota, $data, $turista, $cliente) {
             // Esto es nota = nota + 1
 
             $resultNota['nota'] = $nota;
 
             // Solo para tests
             // $nota = Nota::find(2288);
-            $cliente = null;
-            // Log::info('QERY'. json_encode($request->all()));
-            $turista = $request->turista == "n";
-            if ($turista) {
-                $cliente = Cliente::where('cliente', $request->cliente)->first();
-            } else {
-                $cliente = Cliente::select('digito')->where('cliente', $request->cliente)->first();
-            }
-            $vendedor = Usuario::select('deposito')->find($request->vendedor);
+
             foreach($request->items as $item) {
                 $datos = [
                     'vendedor' => $request->vendedor,
@@ -92,22 +101,25 @@ class NotaController extends Controller
 
                 Producto::where('produto', $item['producto'])->update(['quant_pend' => DB::raw('quant_pend + 1')]);
             }
-            if ($request->has('printerIp') && $request->printerIp !== '') {
-                $clienteNota = (!$turista ? $cliente->digito . '-' . strtoupper($request->nombre) : $cliente->DIGITO . '-'  . strtoupper($cliente->NOME));
-                $hora = $resultNota['fecha'] . ' ' . $resultNota['hora'];
-                $datetime = Carbon::createFromFormat('Y-m-d H:i:s', $hora);
-                $this->printNota(
-                    $request->printerIp,
-                    $request->printerPort,
-                    $resultNota['nota'] . "T",
-                    $datetime->format('Y-m-d H:i'),
-                    $request->items,
-                    $clienteNota,
-                    Usuario::select('numero', 'nome', 'deposito')->find($request->vendedor),
-                    $request->deposito
-                );
-            }
+
         });
+
+        if ($request->has('printerIp') && $request->printerIp !== '') {
+            $clienteNota = (!$turista ? $cliente->digito . '-' . strtoupper($request->nombre) : $cliente->DIGITO . '-'  . strtoupper($cliente->NOME));
+            $hora = $resultNota['fecha'] . ' ' . $resultNota['hora'];
+            $datetime = Carbon::createFromFormat('Y-m-d H:i:s', $hora);
+            $this->printNota(
+                $request->printerIp,
+                $request->printerPort,
+                $resultNota['nota'] . "T",
+                $datetime->format('Y-m-d H:i'),
+                $request->items,
+                $clienteNota,
+                $vendedor,
+                $request->deposito
+            );
+        }
+
         $mensagens = DB::table('FIL050')->select('MENSAGEM_1', 'MENSAGEM_2', 'NTRESTABLET')->first();
         $resultNota['mensagem_1'] .= $mensagens->MENSAGEM_1;
         $resultNota['mensagem_2'] .= $mensagens->MENSAGEM_2;
@@ -121,6 +133,8 @@ class NotaController extends Controller
      */
     public function reprint(Request $request)
     {
+        $idVendedor = $request->has('vendedor') ? $request->vendedor : $request->usuario;
+        $usuario = json_decode(json_encode(Usuario::select('numero', 'nome', 'deposito')->find($idVendedor)));
         $this->printNota(
             $request->printerIp,
             $request->printerPort,
@@ -128,7 +142,7 @@ class NotaController extends Controller
             $request->fecha,
             $request->items,
             $request->cliente,
-            Usuario::select('numero', 'nome', 'deposito')->find($request->usuario),
+            $usuario,
             $request->deposito
         );
         return [
@@ -149,90 +163,16 @@ class NotaController extends Controller
         $usuario,
         $deposito
     ) {
-        try {
-            $connector = new NetworkPrintConnector($printerIp, $printerPort);
-            $printer = new Printer($connector);
-            $total = 0;
-            $items = [];
-            $cant = 0;
-            $mensagens = DB::table('FIL050')->select('MENSAGEM_1', 'MENSAGEM_2', 'NTRESTABLET')->first();
-            if ($mensagens->NTRESTABLET == 'S') {
-                $printer->text("                       \n");
-                $printer->text("                       \n");
-                $printer->text("                       \n");
-                $printer->text("                       \n");
-                $printer->text("                       \n");
-                $printer->text("                       \n");
-                $printer->text("Numero: " . $nota . "\n");
-                $printer->text("                       \n");
-                $printer->text("                       \n");
-                $printer->text("                       \n");
-                $printer->text("                       \n");
-                $printer->text("                       \n");
-                $printer->text("                       \n");
-                $printer->close();
-            } else {
-                $sigla = Moneda::first()->SIGLA;
-                $datetime = Carbon::createFromFormat("Y-m-d H:i", $fecha);
-                $mensagens = DB::table('FIL050')->select('MENSAGEM_1', 'MENSAGEM_2')->first();
-                foreach ($receivedItems as $item) {
-                    $res = Producto::select('digito', 'descricao')->where('produto', $item['producto'])->first();
-                    $items[] = [
-                        $res->digito . "    " . $res->descricao,
-                        $item['cantidad'] . ' x ' . $sigla . " " . number_format($item['precio'], 2) . "    " . $sigla . ' ' . number_format($item['precio'] * $item['cantidad'], 2)
-                    ];
-                    $cant += $item['cantidad'];
-                    $total = $total + ($item['precio'] * $item['cantidad']);
-                }
-                $printer->text("                       \n");
-                $printer->text("                       \n");
-                $printer->text("                       \n");
-                $printer->text("------------------------------------------------\n");
-                $printer->text("VENTAS\n");
-                $printer->text("PEDIDO DE VENTAS\n");
-                $printer->text("Fecha de emision: " . $datetime->format('d/m/Y H:i') . "\n");
-                $printer->text("Cliente: " . $cliente . "\n");
-                $printer->text("Usuario: " . $usuario->numero . "-" . $usuario->nome . "\n");
-                $printer->text("Numero: " . $nota . "\n");
-                $printer->text("Deposito: " . $deposito . "\n");
-                $printer->text("================================================\n");
-                $printer->text("Codigo    Descrip.\n");
-                $printer->text("Cant    Precio    Total\n");
-                foreach ($items as $item) {
-                    $printer->text($item[0] . "\n");
-                    $printer->text($item[1] . "\n");
-                }
-                $printer->text("------------------------------------------------\n");
-                $printer->text("Total: " . $sigla . " " . number_format($total, 2) . "    Items: " . $cant . "\n");
-                $printer->text("------------------------------------------------\n");
-                $printer->text("Total: " . $sigla . " " . number_format($total, 2) . "\n");
-                $printer->text("Desc: 0\n");
-                $printer->text("Total: " . $sigla . " " . number_format($total, 2) . "\n");
-                $printer->text("================================================\n");
-                $printer->text($mensagens->MENSAGEM_1 . "\n");
-                $printer->text($mensagens->MENSAGEM_2 . "\n");
-                $printer->text("                       \n");
-                $printer->text("                       \n");
-                $printer->text("                       \n");
-                $printer->text("                       \n");
-                $printer->text("                       \n");
-                $printer->feed(1);
-                $this->cut($printerIp, $printerPort);
-                $printer->close();
-            }
-        } catch (\Exception $e) {
-            //
-        }
-    }
-
-    private function cut($host, $port)
-    {
-        $connector = new \Posprint\Connectors\Network($host, $port);
-        $printer = new \Posprint\Printers\Bematech($connector);
-        $printer->lineFeed(2);
-        $printer->cut();
-        $printer->send();
-        $printer->close();
+        PrintNota::dispatch(
+            $printerIp,
+            $printerPort,
+            $nota,
+            $fecha,
+            $receivedItems,
+            $cliente,
+            $usuario,
+            $deposito
+        );
     }
 
     /**

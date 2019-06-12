@@ -10,32 +10,64 @@ use App\Http\Controllers\Controller;
 use App\Producto;
 use App\Foto;
 
-use DB;
+use Illuminate\Support\Facades\DB;
 use Image;
 
 class ProductosController extends Controller
 {
     public function index(Request $request)
     {
+        $config = DB::table('fil120')->select(
+            'precoapp',
+            'fotosapp',
+            'depapp',
+            'estoqapp',
+            'qtdapp',
+            'kitapp'
+        )->first();
         $page = $request->has('page') ? $request->page : 1;
-        $productos = Producto::defaultSelect($request->dep)
-            ->filtrar($request->producto)
+        if (!$request->has('def_preco')) {
+            $productos = Producto::defaultSelect($request->dep);
+        } else {
+            $productos = Producto::defaultSelectPreco($request->dep, $config->precoapp);
+        }
+        if ($request->has('ve')) {
+            if ($config->estoqapp == 'S') {
+                $productos = $productos->stockAvailable($config->depapp);
+            }
+            if ($config->kitapp === 2) {
+                $productos = $productos->productosKit();
+            }
+        }
+        $productos = $productos->filtrar($request->producto)
             ->filtrarTipo($request)
             ->where('COMPOSTO', '<>', 'S')
-            ->orderBy('DESCRICAO', 'ASC')
-            ->limit(20)
-            ->skip(20 * ($page - 1))
-            ->get();
-        $res = $productos->map(function($item) {
+            ->orderBy('DESCRICAO', 'ASC');
+        if (!$request->has('get-all')) {
+            $productos = $productos->limit(20)
+                ->skip(20 * ($page - 1));
+        }
+        $productos = $productos->get();
+
+        $res = $productos->map(function ($item) use ($request, $config) {
             $item->foto = '';
-            if (!is_null($item->fotoProducto)) {
-                $item->foto = url('api/productos/' . $item->produto . '/foto');
+            if (
+                (!$request->has('get-all'))
+                || ($request->has('get-all') && $config->fotosapp == 'S')
+            ) {
+                if (!is_null($item->fotoProducto)) {
+                    $item->foto = url('api/productos/' . $item->produto . '/foto');
+                }
             }
             unset($item->fotoProducto);
             return $item;
         });
         return [
             'data' => $res,
+            'config' => [
+                'qtdapp' => $config->qtdapp === 'S',
+                'fotosapp' => $config->fotosapp === 'S',
+            ],
             'query' => $request->has('producto') ? $request->producto : $request->q
         ];
     }

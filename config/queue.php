@@ -13,7 +13,7 @@ return [
     |
     */
 
-    'default' => env('QUEUE_DRIVER', 'sync'),
+    'default' => env('QUEUE_DRIVER', 'redis'),
 
     /*
     |--------------------------------------------------------------------------
@@ -62,7 +62,7 @@ return [
             'connection' => 'default',
             'queue' => 'default',
             'retry_after' => 90,
-            'block_for' => null,
+            'block_for' => 5,
         ],
 
     ],
@@ -79,7 +79,7 @@ return [
     */
 
     'failed' => [
-        'database' => env('DB_CONNECTION', 'mysql'),
+        'database' => env('DB_CONNECTION', 'web_errors'),
         'table' => 'failed_jobs',
     ],
 

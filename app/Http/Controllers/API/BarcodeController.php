@@ -55,12 +55,14 @@ class BarcodeController extends Controller
                         'NOTA' => $numNota,
                         'PRODUTO' => $item['producto'],
                         'USUARIO' => $request->usuario,
-                        'DEPOSITO' => $request->deposito,
-                        'DESTINO' => $request->depositoTo,
+                        'DEPOSITO' => !is_null($request->deposito) ? $request->deposito : 0,
+                        'DESTINO' => !is_null($request->depositoTo) ? $request->depositoTo : 0,
                         'OPERACAO' => $request->operacion,
                         'QUANTIDADE' => $item['cantidad'],
+                        'STATUS' => 0,
                         'DATA' => DB::raw('NOW()'),
                         'HORA' => DB::raw("DATE_FORMAT(NOW(), '%H:%i:%s')"),
+                        'sr_deleted' => ''
                     ]);
                 }
             }

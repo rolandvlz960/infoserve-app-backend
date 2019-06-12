@@ -13,7 +13,8 @@ class UsuariosController extends Controller
 {
     public function login(Request $request)
     {
-        if (Nota::first()->STATUS_NT != 'L') {
+        $statusNt = Nota::first()->STATUS_NT;
+        if ($statusNt != 'L' && $statusNt != '') {
             return [
                 'err' => 'blocked'
             ];
