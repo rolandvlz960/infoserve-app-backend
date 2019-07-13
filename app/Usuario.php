@@ -20,6 +20,11 @@ class Usuario extends Model
         );
     }
 
+    public function scopeActivo($q)
+    {
+        return $q->where('ATIVO', '<>', 'N');
+    }
+
     public function scopeGerente($q)
     {
         return $q->where('GERENTE', '=', 'S')

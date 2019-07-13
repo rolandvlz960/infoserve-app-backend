@@ -23,6 +23,7 @@ class UsuariosController extends Controller
             ->where('USUARIO', '=', $request->username)
             // ->where('SENHA', '=', $request->password)
             ->where('sr_deleted', '<>', 'T')
+            ->ativo()
             ->first();
         if(is_null($usuario)) {
             abort(404);
