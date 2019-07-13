@@ -29,6 +29,9 @@ class ProductosController extends Controller
         if (!$request->has('def_preco')) {
             $productos = Producto::defaultSelect($request->dep);
         } else {
+            if (!$config->precoapp) {
+                abort(500, 'preco-not-configured');
+            }
             $productos = Producto::defaultSelectPreco($request->dep, $config->precoapp);
         }
         if ($request->has('ve')) {
