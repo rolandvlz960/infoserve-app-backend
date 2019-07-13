@@ -23,7 +23,6 @@ class UsuariosController extends Controller
             ->where('USUARIO', '=', $request->username)
             // ->where('SENHA', '=', $request->password)
             ->where('sr_deleted', '<>', 'T')
-            ->ativo()
             ->first();
         if(is_null($usuario)) {
             abort(404);
@@ -34,6 +33,6 @@ class UsuariosController extends Controller
 
     public function getAll()
     {
-        return Usuario::select('numero', 'nome')->get();
+        return Usuario::select('numero', 'nome')->activo()->get();
     }
 }
