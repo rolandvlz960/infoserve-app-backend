@@ -30,7 +30,7 @@ class ProductosController extends Controller
             $productos = Producto::defaultSelect($request->dep);
         } else {
             if (!$config->precoapp) {
-                abort(500, 'preco-not-configured');
+                return response('precio-not-configured', 500);
             }
             $productos = Producto::defaultSelectPreco($request->dep, $config->precoapp);
         }
