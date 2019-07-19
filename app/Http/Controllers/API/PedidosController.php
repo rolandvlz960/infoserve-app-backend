@@ -67,18 +67,18 @@ class PedidosController extends Controller
                     'operacao' => $pedido['tipo'],
                     'localizacion' => substr($pedido['latitud'], 0, 9) . "," . substr($pedido['longitud'], 0, 10),
 
-                    'mobicli' => '',
+                    'mobicli' => 0,
                     'sr_deleted' => '',
                     'finalizar' => '',
-                    'userdel' => '',
+                    'userdel' => 0,
                     'rechr' => '',
-                    'recibo' => '',
-                    'ref_opera' => '',
+                    'recibo' => 0,
+                    'ref_opera' => 0,
                     'notas' => '',
-                    'entregue' => '',
+                    'entregue' => 0,
                     'clinovo' => '',
                     'cidade' => '',
-                    'codcidade' => '',
+                    'codcidade' => 0,
                 ]);
             }
             $return = $nota;
