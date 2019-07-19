@@ -27,5 +27,18 @@ class Pedido extends Model
         'prodkit',
         'operacao',
         'localizacion',
+
+        'mobicli',
+        'sr_deleted',
+        'finalizar',
+        'userdel',
+        'rechr',
+        'recibo',
+        'ref_opera',
+        'notas',
+        'entregue',
+        'clinovo',
+        'cidade',
+        'codcidade',
     ];
 }

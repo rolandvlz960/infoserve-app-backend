@@ -66,6 +66,19 @@ class PedidosController extends Controller
                     'prodkit' => $produto->composto,
                     'operacao' => $pedido['tipo'],
                     'localizacion' => substr($pedido['latitud'], 0, 9) . "," . substr($pedido['longitud'], 0, 10),
+
+                    'mobicli' => '',
+                    'sr_deleted' => '',
+                    'finalizar' => '',
+                    'userdel' => '',
+                    'rechr' => '',
+                    'recibo' => '',
+                    'ref_opera' => '',
+                    'notas' => '',
+                    'entregue' => '',
+                    'clinovo' => '',
+                    'cidade' => '',
+                    'codcidade' => '',
                 ]);
             }
             $return = $nota;
