@@ -40,5 +40,7 @@ class Pedido extends Model
         'clinovo',
         'cidade',
         'codcidade',
+        'recvalor',
+        'autoriza',
     ];
 }

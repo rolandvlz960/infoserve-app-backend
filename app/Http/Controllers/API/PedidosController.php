@@ -79,6 +79,8 @@ class PedidosController extends Controller
                     'clinovo' => '',
                     'cidade' => '',
                     'codcidade' => 0,
+                    'recvalor' => 0,
+                    'autoriza' => 0,
                 ]);
             }
             $return = $nota;

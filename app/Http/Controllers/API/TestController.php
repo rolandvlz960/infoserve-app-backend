@@ -11,7 +11,7 @@ class TestController extends Controller
     public function test(Request $request)
     {
         if ($request->has('ve')) {
-            if (DB::table('fil120')->select('tipoapp')->first()->tipoapp != 2) {
+            if (DB::table('fil120')->select('tipoapp')->first()->tipoapp != 1) {
                 return 'TESTOK';
             } else {
                 return 'DISABLED';
