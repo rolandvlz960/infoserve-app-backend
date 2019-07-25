@@ -48,7 +48,7 @@ class ProductosController extends Controller
                     "ID" => $request->key,
                     "VENDEDOR" => $request->ven,
                     "NOME" => $vendedor->NOME,
-                    "DATA" => DB::select("SELECT ADDDATE( encerra, INTERVAL 1 DAY) as data from fil120 order by data desc limit 1;")[0]->data,
+                    "DATA" => DB::select("SELECT CURDATE() AS data")[0]->data,
                     "HORA" => DB::select("SELECT TIME_FORMAT(CURTIME(), '%h:%i:%s') AS hora")[0]->hora,
                     "STATUS" => '.',
                     "AUTORIZA" => 'N',
