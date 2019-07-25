@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\API;
 
 use App\Deposito;
+use App\Dispositivo;
+use App\Usuario;
 use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use App\Http\Controllers\Controller;
@@ -37,6 +39,24 @@ class ProductosController extends Controller
             $productos = Producto::defaultSelectPreco($request->dep, $config->precoapp);
         }
         if ($request->has('ve')) {
+            $dispositivo = Dispositivo::where('id', '=', $request->key)
+                ->first();
+            if (is_null($dispositivo)) {
+                $vendedor = Usuario::where('numero', '=', $request->ven)
+                    ->first();
+                $dispositivo = Dispositivo::create([
+                    "ID" => $request->key,
+                    "VENDEDOR" => $request->ven,
+                    "NOME" => $vendedor->nome,
+                    "DATA" => DB::select("SELECT ADDDATE( encerra, INTERVAL 1 DAY) as data from fil120 order by data desc limit 1;")[0]->data,
+                    "HORA" => DB::select("SELECT TIME_FORMAT(CURTIME(), '%h:%i:%s') AS hora")[0]->hora,
+                ]);
+            }
+            if ($dispositivo->autoriza !== 'S') {
+                return response()->json([
+                    'error' => 'disabled'
+                ], 401);
+            }
             if ($config->estoqapp == 'S') {
                 $productos = $productos->stockAvailable($config->depapp);
             }
