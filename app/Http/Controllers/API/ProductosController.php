@@ -52,6 +52,7 @@ class ProductosController extends Controller
                     "HORA" => DB::select("SELECT TIME_FORMAT(CURTIME(), '%h:%i:%s') AS hora")[0]->hora,
                     "STATUS" => '.',
                     "AUTORIZA" => 'N',
+                    "sr_deleted" => '',
                 ]);
             }
             if ($dispositivo->autoriza !== 'S') {
