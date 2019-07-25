@@ -47,7 +47,7 @@ class ProductosController extends Controller
                 $dispositivo = Dispositivo::create([
                     "ID" => $request->key,
                     "VENDEDOR" => $request->ven,
-                    "NOME" => $vendedor->nome,
+                    "NOME" => $vendedor->NOME,
                     "DATA" => DB::select("SELECT ADDDATE( encerra, INTERVAL 1 DAY) as data from fil120 order by data desc limit 1;")[0]->data,
                     "HORA" => DB::select("SELECT TIME_FORMAT(CURTIME(), '%h:%i:%s') AS hora")[0]->hora,
                 ]);
