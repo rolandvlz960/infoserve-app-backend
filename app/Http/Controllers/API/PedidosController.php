@@ -62,7 +62,7 @@ class PedidosController extends Controller
                     'produto' => $produto->digito,
                     'quantidade' => $pedido['cantidad'],
                     'preco' => $pedido['precio'],
-                    'prazo' => $condPagamento,
+                    'prazo' => $pedido['prazo'],
                     'prodkit' => $produto->composto,
                     'operacao' => $pedido['tipo'],
                     'localizacion' => substr($pedido['latitud'], 0, 9) . "," . substr($pedido['longitud'], 0, 10),
