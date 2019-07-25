@@ -54,8 +54,8 @@ class ProductosController extends Controller
             }
             if ($dispositivo->autoriza !== 'S') {
                 return response()->json([
-                    'error' => 'disabled'
-                ], 401);
+                    'error' => 'tablet-disabled'
+                ]);
             }
             if ($config->estoqapp == 'S') {
                 $productos = $productos->stockAvailable($config->depapp);
