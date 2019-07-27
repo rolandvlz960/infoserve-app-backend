@@ -55,7 +55,7 @@ class ProductosController extends Controller
                     "sr_deleted" => '',
                 ]);
             }
-            if ($dispositivo->autoriza !== 'S') {
+            if ($dispositivo->AUTORIZA !== 'S') {
                 return response()->json([
                     'error' => 'tablet-disabled'
                 ]);
