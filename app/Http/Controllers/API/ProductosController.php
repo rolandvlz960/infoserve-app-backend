@@ -41,7 +41,6 @@ class ProductosController extends Controller
         if ($request->has('ve')) {
             $dispositivo = Dispositivo::where('id', '=', $request->key)
                 ->select(
-                    'ID',
                     'AUTORIZA'
                 )
                 ->first();
