@@ -9,6 +9,7 @@ class Dispositivo extends Model
 
     protected $table = "fil412";
     public $timestamps = false;
+    protected $connection = "mysql-second";
 
     protected $fillable = [
         "ID",

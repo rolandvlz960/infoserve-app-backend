@@ -40,7 +40,10 @@ class ProductosController extends Controller
         }
         if ($request->has('ve')) {
             $dispositivo = Dispositivo::where('id', '=', $request->key)
-                ->select('AUTORIZA')
+                ->select(
+                    'ID',
+                    'AUTORIZA'
+                )
                 ->first();
             if (is_null($dispositivo)) {
                 $vendedor = Usuario::where('numero', '=', $request->ven)
