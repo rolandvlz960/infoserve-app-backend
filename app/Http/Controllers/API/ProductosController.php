@@ -42,24 +42,24 @@ class ProductosController extends Controller
             $dispositivo = Dispositivo::where('id', '=', $request->key)
                 ->select('AUTORIZA')
                 ->first();
-//            if (is_null($dispositivo)) {
-//                $vendedor = Usuario::where('numero', '=', $request->ven)
-//                    ->select('NOME')
-//                    ->first();
-//                Dispositivo::create([
-//                    "ID" => $request->key,
-//                    "VENDEDOR" => $request->ven,
-//                    "NOME" => $vendedor->NOME,
-//                    "DATA" => DB::select("SELECT CURDATE() AS data")[0]->data,
-//                    "HORA" => DB::select("SELECT TIME_FORMAT(CURTIME(), '%h:%i:%s') AS hora")[0]->hora,
-//                    "STATUS" => '.',
-//                    "AUTORIZA" => 'N',
-//                    "sr_deleted" => '',
-//                ]);
-//                $dispositivo = Dispositivo::where('id', '=', $request->key)
-//                    ->select('AUTORIZA')
-//                    ->first();
-//            }
+            if (is_null($dispositivo)) {
+                $vendedor = Usuario::where('numero', '=', $request->ven)
+                    ->select('NOME')
+                    ->first();
+                Dispositivo::create([
+                    "ID" => $request->key,
+                    "VENDEDOR" => $request->ven,
+                    "NOME" => $vendedor->NOME,
+                    "DATA" => DB::select("SELECT CURDATE() AS data")[0]->data,
+                    "HORA" => DB::select("SELECT TIME_FORMAT(CURTIME(), '%h:%i:%s') AS hora")[0]->hora,
+                    "STATUS" => '.',
+                    "AUTORIZA" => 'N',
+                    "sr_deleted" => '',
+                ]);
+                $dispositivo = Dispositivo::where('id', '=', $request->key)
+                    ->select('AUTORIZA')
+                    ->first();
+            }
 //            if ($dispositivo->AUTORIZA !== 'S') {
 //                return response()->json([
 //                    'error' => 'tablet-disabled'
