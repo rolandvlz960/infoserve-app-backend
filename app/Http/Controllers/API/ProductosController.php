@@ -95,14 +95,13 @@ class ProductosController extends Controller
             unset($item->fotoProducto);
             return $item;
         });
-        return [];
         return [
-            'data' => $res,
+            'data' => [],
             'config' => [
                 'qtdapp' => $config->qtdapp === 'S' ? 1 : 0,
                 'fotosapp' => $config->fotosapp === 'S' ? 1 : 0,
             ],
-            'query' => $request->has('producto') ? $request->producto : $request->q
+            'query' => $request->has('producto') ? $request->producto : ( $request->has('9') ? $request->q : '' )
         ];
     }
 
