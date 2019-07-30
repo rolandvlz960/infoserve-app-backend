@@ -61,9 +61,9 @@ class ProductosController extends Controller
                     ->first();
             }
             if ($dispositivo->AUTORIZA !== 'S') {
-                return response()->json([
+                return [
                     'error' => 'tablet-disabled'
-                ]);
+                ];
             }
             if ($config->estoqapp == 'S') {
                 $productos = $productos->stockAvailable($config->depapp);
