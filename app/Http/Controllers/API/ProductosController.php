@@ -98,8 +98,8 @@ class ProductosController extends Controller
         return [
             'data' => [],
             'config' => [
-                'qtdapp' => $config->qtdapp === 'S' ? 1 : 0,
-                'fotosapp' => $config->fotosapp === 'S' ? 1 : 0,
+                'qtdapp' => $config->qtdapp === 'S',
+                'fotosapp' => $config->fotosapp === 'S',
             ],
             'query' => $request->has('producto') ? $request->producto : ( $request->has('9') ? $request->q : '' )
         ];
