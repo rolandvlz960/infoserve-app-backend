@@ -42,10 +42,10 @@ class ProductosController extends Controller
             $dispositivo = Dispositivo::where('id', '=', $request->key)
                 ->select('AUTORIZA')
                 ->first();
-            if (is_null($dispositivo)) {
-                $vendedor = Usuario::where('numero', '=', $request->ven)
-                    ->select('NOME')
-                    ->first();
+//            if (is_null($dispositivo)) {
+//                $vendedor = Usuario::where('numero', '=', $request->ven)
+//                    ->select('NOME')
+//                    ->first();
 //                Dispositivo::create([
 //                    "ID" => $request->key,
 //                    "VENDEDOR" => $request->ven,
@@ -56,15 +56,15 @@ class ProductosController extends Controller
 //                    "AUTORIZA" => 'N',
 //                    "sr_deleted" => '',
 //                ]);
-                $dispositivo = Dispositivo::where('id', '=', $request->key)
-                    ->select('AUTORIZA')
-                    ->first();
-            }
-            if ($dispositivo->AUTORIZA !== 'S') {
-                return response()->json([
-                    'error' => 'tablet-disabled'
-                ]);
-            }
+//                $dispositivo = Dispositivo::where('id', '=', $request->key)
+//                    ->select('AUTORIZA')
+//                    ->first();
+//            }
+//            if ($dispositivo->AUTORIZA !== 'S') {
+//                return response()->json([
+//                    'error' => 'tablet-disabled'
+//                ]);
+//            }
             if ($config->estoqapp == 'S') {
                 $productos = $productos->stockAvailable($config->depapp);
             }
