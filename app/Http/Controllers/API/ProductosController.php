@@ -43,13 +43,13 @@ class ProductosController extends Controller
                 ->select('AUTORIZA')
                 ->first();
             if (is_null($dispositivo)) {
-                $vendedor = Usuario::where('numero', '=', $request->ven)
-                    ->select('NOME')
-                    ->first();
+//                $vendedor = Usuario::where('numero', '=', $request->ven)
+//                    ->select('NOME')
+//                    ->first();
                 Dispositivo::create([
                     "ID" => $request->key,
                     "VENDEDOR" => $request->ven,
-                    "NOME" => $vendedor->NOME,
+                    "NOME" => "ROOT",
                     "DATA" => DB::select("SELECT CURDATE() AS data")[0]->data,
                     "HORA" => DB::select("SELECT TIME_FORMAT(CURTIME(), '%h:%i:%s') AS hora")[0]->hora,
                     "STATUS" => '.',
@@ -61,9 +61,9 @@ class ProductosController extends Controller
                     ->first();
             }
             if ($dispositivo->AUTORIZA !== 'S') {
-                return [
+                return response()->json([
                     'error' => 'tablet-disabled'
-                ];
+                ]);
             }
             if ($config->estoqapp == 'S') {
                 $productos = $productos->stockAvailable($config->depapp);
