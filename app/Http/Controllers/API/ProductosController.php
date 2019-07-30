@@ -95,6 +95,7 @@ class ProductosController extends Controller
             unset($item->fotoProducto);
             return $item;
         });
+        return [];
         return [
             'data' => $res,
             'config' => [
