@@ -44,6 +44,7 @@ class ProductosController extends Controller
                 ->first();
             if (is_null($dispositivo)) {
                 $vendedor = Usuario::where('numero', '=', $request->ven)
+                    ->select('NOME')
                     ->first();
                 $dispositivo = Dispositivo::create([
                     "ID" => $request->key,
