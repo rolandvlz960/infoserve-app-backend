@@ -103,7 +103,7 @@ class ProductosController extends Controller
                 'qtdapp' => $config->qtdapp === 'S',
                 'fotosapp' => $config->fotosapp === 'S',
             ],
-            'query' => $request->has('producto') ? $request->producto : ( $request->has('9') ? $request->q : '' )
+            'query' => $request->has('producto') ? $request->producto : $request->q
         ];
     }
 
