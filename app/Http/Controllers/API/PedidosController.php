@@ -65,7 +65,7 @@ class PedidosController extends Controller
                     'prazo' => $pedido['prazo'],
                     'prodkit' => $produto->composto,
                     'operacao' => $pedido['tipo'],
-                    'localizacion' => substr($pedido['latitud'], 0, 9) . "," . substr($pedido['longitud'], 0, 10),
+                    'geolocal' => substr($pedido['latitud'], 0, 9) . "," . substr($pedido['longitud'], 0, 10),
 
                     'mobicli' => 0,
                     'sr_deleted' => '',
