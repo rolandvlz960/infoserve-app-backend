@@ -17,6 +17,11 @@ class Producto extends Model
         return $this->hasOne('App\Foto', 'produto', 'produto');
     }
 
+    public function subitems()
+    {
+        return $this->hasMany(Subproducto::class, 'PRODUTO', 'PRODUTO');
+    }
+
     public function scopeDefaultSelect($q, $dep)
     {
         return $q->select(

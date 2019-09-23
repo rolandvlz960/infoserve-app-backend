@@ -76,7 +76,7 @@ class ProductosController extends Controller
         }
         $productos = $productos->filtrar($request->producto)
             ->filtrarTipo($request)
-            ->where('COMPOSTO', '<>', 'S')
+//            ->where('COMPOSTO', '<>', 'S')
             ->orderBy('DESCRICAO', 'ASC');
         if (!$request->has('get-all')) {
             $productos = $productos->limit(20)
@@ -141,15 +141,48 @@ class ProductosController extends Controller
     {
         $dep = $request->dep;
         $cant = $request->has('cant') ? $request->cant : 1;
-        $res = Producto::where('produto', $id)
-        ->where("dep$dep", '>', 0)
-        ->whereRaw("dep$dep-bloq_dep$dep >= $cant")
-        ->update([
-            "bloq_dep$dep" => DB::raw("bloq_dep$dep + " . $cant),
-            'bloqapp' => DB::raw('bloqapp + 1')
-        ]);
+        $res = 0;
+        $producto = Producto::select(
+            'PRODUTO',
+            'COMPOSTO'
+        )
+            ->where('produto', $id)
+            ->first();
+        if($producto->COMPOSTO == 'S') {
+            $subitems = $producto->subitems;
+            DB::beginTransaction();
+            $count = 0;
+            foreach ($subitems as $subitem) {
+                $itemCant = $subitem->QUANTIDADE;
+                $count += Producto::where('produto', $subitem->SUBITEM)
+                    ->where("dep$dep", '>', 0)
+                    ->whereRaw("dep$dep-bloq_dep$dep >= " . ( $cant * $itemCant ))
+                    ->update([
+                        "bloq_dep$dep" => DB::raw("bloq_dep$dep + " . ( $cant * $itemCant )),
+                        'bloqapp' => DB::raw('bloqapp + ' . ( $cant * $itemCant ))
+                    ]);
+            }
+            if ($count != $subitems->count()) {
+                DB::rollBack();
+                return [
+                    'success' => 'no'
+                ];
+            }
+
+            $res = $count;
+            DB::commit();
+        } else {
+            $res = Producto::where('produto', $id)
+                ->where("dep$dep", '>', 0)
+                ->whereRaw("dep$dep-bloq_dep$dep >= $cant")
+                ->update([
+                    "bloq_dep$dep" => DB::raw("bloq_dep$dep + " . $cant),
+                    'bloqapp' => DB::raw('bloqapp + 1')
+                ]);
+        }
+
         return [
-            'success' => $res == 1 ? 'yes' : 'no'
+            'success' => $res == 0 ? 'no' : 'yes'
         ];
     }
 
@@ -157,14 +190,45 @@ class ProductosController extends Controller
     {
         $dep = $request->dep;
         $numDeleted = $request->has('numDeleted') ? $request->numDeleted : 1;
-        $res = Producto::where('produto', $id)
-        ->where("bloq_dep$dep", '>', 0)
-        ->update([
-            "bloq_dep$dep" => DB::raw("bloq_dep$dep - $numDeleted"),
-            'bloqapp' => DB::raw("bloqapp - $numDeleted")
-        ]);
+        $producto = Producto::select(
+            'PRODUTO',
+            'COMPOSTO'
+        )
+            ->where('produto', $id)
+            ->first();
+        if($producto->COMPOSTO == 'S') {
+            $subitems = $producto->subitems;
+            DB::beginTransaction();
+            $count = 0;
+            foreach ($subitems as $subitem) {
+                $itemCant = $subitem->QUANTIDADE;
+                $count += Producto::where('produto', $subitem->SUBITEM)
+                    ->where("bloq_dep$dep", '>', 0)
+                    ->update([
+                        "bloq_dep$dep" => DB::raw("bloq_dep$dep - " . ( $numDeleted * $itemCant )),
+                        'bloqapp' => DB::raw("bloqapp - " . ( $numDeleted * $itemCant ))
+                    ]);
+            }
+            if ($count != $subitems->count()) {
+                DB::rollBack();
+                return [
+                    'success' => 'no'
+                ];
+            }
+
+            $res = $count;
+            DB::commit();
+        } else {
+            $res = Producto::where('produto', $id)
+                ->where("bloq_dep$dep", '>', 0)
+                ->update([
+                    "bloq_dep$dep" => DB::raw("bloq_dep$dep - $numDeleted"),
+                    'bloqapp' => DB::raw("bloqapp - $numDeleted")
+                ]);
+        }
+
         return [
-            'success' => $res == 1 ? 'yes' : 'no'
+            'success' => $res == 0 ? 'no' : 'yes'
         ];
     }
 }
