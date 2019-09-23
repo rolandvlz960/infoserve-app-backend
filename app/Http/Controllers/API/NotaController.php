@@ -61,6 +61,7 @@ class NotaController extends Controller
             // $nota = Nota::find(2288);
 
             foreach($request->items as $item) {
+                $producto = Producto::select('COMPOSTO')->where('produto', '=', $item['producto'])->first();
                 $datos = [
                     'vendedor' => $request->vendedor,
                     'mobiped' => $nota,
@@ -80,7 +81,7 @@ class NotaController extends Controller
                     'doc' => !$turista ? $request->doc : $cliente->RG,
                     'deposito' => (int) $request->deposito,
                     'produto' => $item['producto'],
-                    'prodkit' => 'N',
+                    'prodkit' => $producto->COMPOSTO,
                     'quantidade' => $item['cantidad'],
                     'preco' => $item['precio'],
                     'prazo' => 0,
