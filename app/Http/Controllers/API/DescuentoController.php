@@ -135,7 +135,12 @@ class DescuentoController extends Controller
             'tipo' => 1,
             'descnota' => 0,
             'operacao' => 1,
+            'desconto' => '',
+            'nomecli' => '',
+            'nivelpreco' => '',
+            'gerentcons' => '',
             'vendedor' => $request->idVendedor,
+            'sr_deleted' => '',
         ]);
 
         return [
