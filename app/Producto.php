@@ -97,7 +97,7 @@ class Producto extends Model
     {
         if ($request->has('type')) {
             $filterTypes = [
-                'codigo' => 'produto',
+                'codigo' => 'digito',
                 'descripcion' => 'descricao',
                 'referencia' => 'referencia',
             ];
