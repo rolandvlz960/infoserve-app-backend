@@ -15,6 +15,7 @@ class GerentesController extends Controller
             'NOME'
         )
             ->gerente()
+            ->where('sr_deleted', '<>', 'T')
             ->get();
     }
 }
