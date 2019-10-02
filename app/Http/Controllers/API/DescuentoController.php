@@ -93,7 +93,7 @@ class DescuentoController extends Controller
                 ($valorProd - $custoProd) / $custoProd * 100,
             'totalquant' => $request->quantidadeProducto,
             'produto' => $producto->DIGITO,
-            'descricao' => $producto->DESCRICAO,
+            'descricao' => substr($producto->DESCRICAO, 0, 40),
             'quantidade' => $request->quantidadeProducto,
             'preco' => $request->precoSolicitado,
             'total' => $request->precoSolicitado * $request->quantidadeProducto,
