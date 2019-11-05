@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Bloqueo;
 use App\Deposito;
 use App\Dispositivo;
+use App\Nota;
 use App\Usuario;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use App\Http\Controllers\Controller;
@@ -142,6 +145,9 @@ class ProductosController extends Controller
         $dep = $request->dep;
         $cant = $request->has('cant') ? $request->cant : 1;
         $res = 0;
+        $idBloqueo = $request->idbloq;
+        $idUsuario = $request->usuario;
+        $usuario = Usuario::where('numero', '=', $idUsuario)->select('nome')->first();
         $producto = Producto::select(
             'PRODUTO',
             'COMPOSTO'
@@ -181,14 +187,42 @@ class ProductosController extends Controller
                 ]);
         }
 
+        if ($res != 0) {
+            if ($idBloqueo == 0) {
+                $lastBloqueo = Bloqueo::max('idbloq');
+                $fechaEncerra = Nota::select('encerra')->first()->encerra;
+                $idBloqueo = !is_null($lastBloqueo) ? ( $lastBloqueo + 1 ) : 1;
+                Bloqueo::create([
+                    'idbloq' => $idBloqueo,
+                    'usuario' => $idUsuario,
+                    'hora' => DB::raw('time_format(NOW(), "%H:%i:%s")'),
+                    'horafim' => '',
+                    'data' => Carbon::createFromFormat('Y-m-d', $fechaEncerra)->addDay()->format('Y-m-d'),
+                    'nome' => $usuario->nome,
+                    'produto' => $id,
+                    'quantidade' => $cant,
+                    'deposito' => $dep,
+                    'status' => '',
+                    'qtdedesb' => 0,
+                    'operacao' => 1,
+                ]);
+            } else {
+                Bloqueo::where('idbloq', '=', $idBloqueo)->increment('quantidade', $cant);
+            }
+        }
+
         return [
-            'success' => $res == 0 ? 'no' : 'yes'
+            'success' => $res == 0 ? 'no' : 'yes',
+            'idbloq' => $idBloqueo
         ];
     }
 
     public function decQtt($id, Request $request)
     {
         $dep = $request->dep;
+        $idBloqueo = $request->idbloq;
+        $idUsuario = $request->usuario;
+        $usuario = Usuario::where('numero', '=', $idUsuario)->select('nome')->first();
         $numDeleted = $request->has('numDeleted') ? $request->numDeleted : 1;
         $producto = Producto::select(
             'PRODUTO',
@@ -227,8 +261,18 @@ class ProductosController extends Controller
                 ]);
         }
 
+        $updated = Bloqueo::where('idbloq', '=', $idBloqueo)->where('quantidade', '>', $numDeleted)->decrement('quantidade', $numDeleted);
+
+        if (!$updated) {
+            Bloqueo::where('idbloq', '=', $idBloqueo)->update([
+                "quantidade" => 0,
+                'horafim' => DB::raw('time_format(NOW(), "%H:%i:%s")')
+            ]);
+        }
+
         return [
-            'success' => $res == 0 ? 'no' : 'yes'
+            'success' => $res == 0 ? 'no' : 'yes',
+            'idbloq' => $idBloqueo
         ];
     }
 }
