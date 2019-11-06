@@ -205,6 +205,7 @@ class ProductosController extends Controller
                     'status' => '',
                     'qtdedesb' => 0,
                     'operacao' => 1,
+                    'sr_deleted' => '',
                 ]);
             } else {
                 Bloqueo::where('idbloq', '=', $idBloqueo)->increment('quantidade', $cant);

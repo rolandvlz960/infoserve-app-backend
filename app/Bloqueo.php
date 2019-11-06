@@ -23,5 +23,6 @@ class Bloqueo extends Model
             'status',
             'qtdedesb',
             'operacao',
+            'sr_deleted',
     ];
 }
