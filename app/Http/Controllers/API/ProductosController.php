@@ -192,6 +192,7 @@ class ProductosController extends Controller
                 $lastBloqueo = Bloqueo::max('idbloq');
                 $fechaEncerra = Nota::select('encerra')->first()->encerra;
                 $idBloqueo = !is_null($lastBloqueo) ? ( $lastBloqueo + 1 ) : 1;
+                $producto = Producto::where('produto', $id)->select('digito')->first();
                 Bloqueo::create([
                     'idbloq' => $idBloqueo,
                     'usuario' => $idUsuario,
@@ -199,7 +200,7 @@ class ProductosController extends Controller
                     'horafim' => '',
                     'data' => Carbon::createFromFormat('Y-m-d', $fechaEncerra)->addDay()->format('Y-m-d'),
                     'nome' => $usuario->nome,
-                    'produto' => $id,
+                    'produto' => $producto->digito,
                     'quantidade' => $cant,
                     'deposito' => $dep,
                     'status' => '',
