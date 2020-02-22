@@ -77,6 +77,9 @@ class ProductosController extends Controller
                 $productos = $productos->productosKit();
             }
         }
+        if ($request->has('barcode')) {
+            $productos = $productos->buscarCodigoBarra($request);
+        }
         $productos = $productos->filtrar($request->producto)
             ->filtrarTipo($request)
 //            ->where('COMPOSTO', '<>', 'S')
