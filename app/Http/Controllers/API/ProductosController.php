@@ -159,7 +159,7 @@ class ProductosController extends Controller
             ->where('produto', $id)
             ->first();
         if($producto->COMPOSTO == 'S') {
-            $subitems = $producto->subitems->where('sr_deleted', '<>', 'T')->get();
+            $subitems = $producto->subitems()->where('sr_deleted', '<>', 'T')->get();
             DB::beginTransaction();
             $count = 0;
             foreach ($subitems as $subitem) {
