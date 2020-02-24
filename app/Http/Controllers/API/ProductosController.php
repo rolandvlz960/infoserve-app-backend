@@ -240,14 +240,11 @@ class ProductosController extends Controller
             ->where('produto', $id)
             ->first();
         if($producto->COMPOSTO == 'S') {
-            $subitems = $producto->subitems;
+            $subitems = $producto->subitems()->where('sr_deleted', '<>', 'T')->get();
             DB::beginTransaction();
             $count = 0;
             foreach ($subitems as $subitem) {
                 $itemCant = $subitem->QUANTIDADE;
-                Log::info("Cant: " . $numDeleted);
-                Log::info("Item cant: " . $itemCant);
-                Log::info("Calc: " . ( $numDeleted * $itemCant ));
                 $count += Producto::where('produto', $subitem->SUBITEM)
                     ->where("bloq_dep$dep", '>', 0)
                     ->update([
