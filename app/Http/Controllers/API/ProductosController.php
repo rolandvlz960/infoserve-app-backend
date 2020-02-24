@@ -166,6 +166,7 @@ class ProductosController extends Controller
                 $itemCant = $subitem->QUANTIDADE;
                 Log::info("Cant: " . $cant);
                 Log::info("Item cant: " . $itemCant);
+                Log::info("Calc: " . ( $cant * $itemCant ));
                 $count += Producto::where('produto', $subitem->SUBITEM)
                     ->where("dep$dep", '>', 0)
                     ->whereRaw("dep$dep-bloq_dep$dep >= " . ( $cant * $itemCant ))
