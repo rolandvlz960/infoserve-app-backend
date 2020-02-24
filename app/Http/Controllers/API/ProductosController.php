@@ -16,6 +16,7 @@ use App\Producto;
 use App\Foto;
 
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Image;
 
 class ProductosController extends Controller
@@ -158,11 +159,13 @@ class ProductosController extends Controller
             ->where('produto', $id)
             ->first();
         if($producto->COMPOSTO == 'S') {
-            $subitems = $producto->subitems;
+            $subitems = $producto->subitems->where('sr_deleted', '<>', 'T')->get();
             DB::beginTransaction();
             $count = 0;
             foreach ($subitems as $subitem) {
                 $itemCant = $subitem->QUANTIDADE;
+                Log::info("Cant: " . $cant);
+                Log::info("Item cant: " . $itemCant);
                 $count += Producto::where('produto', $subitem->SUBITEM)
                     ->where("dep$dep", '>', 0)
                     ->whereRaw("dep$dep-bloq_dep$dep >= " . ( $cant * $itemCant ))
