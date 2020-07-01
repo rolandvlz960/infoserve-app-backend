@@ -49,7 +49,7 @@ class Producto extends Model
     public function scopeStockAvailable($q, $dep)
     {
         $depStr = $dep < 10 ? ( "0" . $dep ) : $dep;
-        return $q->where($depStr, '>', 0);
+        return $q->where('dep' . $depStr, '>', 0);
     }
 
     public function scopeDefaultSelectPreco($q, $dep, $preco)

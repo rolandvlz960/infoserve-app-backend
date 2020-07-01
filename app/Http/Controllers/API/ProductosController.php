@@ -74,7 +74,7 @@ class ProductosController extends Controller
                     'error' => 'tablet-disabled'
                 ]);
             }
-            if ($config->estoqapp == 'S') {
+            if ($config->estoqapp == 'N') {
                 $productos = $productos->stockAvailable($config->depapp);
             }
             if ($config->kitapp === 2) {
