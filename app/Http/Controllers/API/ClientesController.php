@@ -28,10 +28,11 @@ class ClientesController extends Controller
         }
         $res = $res->get();
         foreach ($res as $cliente) {
-            $condPagamento = CondicaoPagamento::deCliente($cliente->cliente)->pluck('codcondpag');
-            $cliente->condV = $condPagamento->contains('V') ? 1 : 0;
-            $cliente->cond7 = $condPagamento->contains('7') ? 1 : 0;
-            $cliente->cond28 = $condPagamento->contains('28') ? 1 : 0;
+            $condPagamentos = CondicaoPagamento::deCliente($cliente->cliente)->pluck('codcondpag');
+            foreach ($condPagamentos as $condPagamento) {
+                $condAttrName = "cond" . $condPagamento;
+                $cliente->$condAttrName = 1;
+            }
         }
         return [
             'data' => $res,
