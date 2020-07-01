@@ -17,6 +17,6 @@ class Moneda extends Model
             'nomeplural',
             'operacao',
             'mascara'
-        )->where('ativo', 'S');
+        )->where('moeda', 1);
     }
 }
