@@ -31,16 +31,19 @@ class ProductosController extends Controller
             'qtdapp',
             'kitapp'
         )->first();
+
+        $configDep = $config->depapp;
+
         $page = $request->has('page') ? $request->page : 1;
         if (!$request->has('def_preco')) {
-            $productos = Producto::defaultSelect($request->dep);
+            $productos = Producto::defaultSelect($request->has('ve') && $configDep != 0 ? $configDep : $request->dep);
         } else {
             if (!$config->precoapp) {
                 return response()->json([
                     'error' => 'precio-not-configured'
                 ]);
             }
-            $productos = Producto::defaultSelectPreco($request->dep, $config->precoapp);
+            $productos = Producto::defaultSelectPreco($request->has('ve') && $configDep != 0 ? $configDep : $request->dep, $config->precoapp);
         }
         if ($request->has('ve')) {
             $dispositivo = Dispositivo::where('id', '=', $request->key)
