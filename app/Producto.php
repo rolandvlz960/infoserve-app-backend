@@ -24,6 +24,7 @@ class Producto extends Model
 
     public function scopeDefaultSelect($q, $dep)
     {
+        $dep = $dep < 10 ? ( "0" . $dep ) : $dep;
         return $q->select(
             'produto',
             'digito',
@@ -54,6 +55,7 @@ class Producto extends Model
 
     public function scopeDefaultSelectPreco($q, $dep, $preco)
     {
+        $dep = $dep < 10 ? ( "0" . $dep ) : $dep;
         return $q->select(
             'produto',
             'digito',
