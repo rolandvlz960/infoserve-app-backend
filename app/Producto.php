@@ -24,7 +24,7 @@ class Producto extends Model
 
     public function scopeDefaultSelect($q, $dep)
     {
-        $dep = $dep < 10 ? ( "0" . $dep ) : $dep;
+        $dep = $dep < 10 ? ( "0" . intval($dep) ) : intval($dep);
         return $q->select(
             'produto',
             'digito',
@@ -49,13 +49,13 @@ class Producto extends Model
 
     public function scopeStockAvailable($q, $dep)
     {
-        $depStr = $dep < 10 ? ( "0" . $dep ) : $dep;
+        $depStr = $dep < 10 ? ( "0" . intval($dep) ) : intval($dep);
         return $q->where('dep' . $depStr, '>', 0);
     }
 
     public function scopeDefaultSelectPreco($q, $dep, $preco)
     {
-        $dep = $dep < 10 ? ( "0" . $dep ) : $dep;
+        $dep = $dep < 10 ? ( "0" . intval($dep) ) : intval($dep);
         return $q->select(
             'produto',
             'digito',
