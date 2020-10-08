@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Bloqueo;
 use App\Jobs\PrintNota;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -11,7 +12,7 @@ use Carbon\Carbon;
 use Mike42\Escpos\PrintConnectors\NetworkPrintConnector;
 use Mike42\Escpos\Printer;
 
-use DB;
+use Illuminate\Support\Facades\DB;
 use App\Nota;
 use App\Usuario;
 use App\Producto;
@@ -60,7 +61,10 @@ class NotaController extends Controller
             // Solo para tests
             // $nota = Nota::find(2288);
 
+            $hora = DB::select("SELECT TIME_FORMAT(CURTIME(), '%h:%i:%s') AS hora")[0]->hora;
+
             foreach($request->items as $item) {
+                Log::info("item: " . json_encode($item));
                 $producto = Producto::select('COMPOSTO')->where('produto', '=', $item['producto'])->first();
                 $datos = [
                     'vendedor' => $request->vendedor,
@@ -69,7 +73,7 @@ class NotaController extends Controller
                     'mobiid' => 0,
                     'mobicli' => 0,
                     'data' => $data,
-                    'hora' => DB::select("SELECT TIME_FORMAT(CURTIME(), '%h:%i:%s') AS hora")[0]->hora,
+                    'hora' => $hora,
                     'cliente' => $request->cliente,
                     'clinovo' => $turista ? 'S' : 'N',
                     'nome' => !$turista ? $request->nombre : $cliente->NOME,
@@ -96,11 +100,19 @@ class NotaController extends Controller
                 if ($request->has('fotodoc2')) {
                     $datos['fotodoc2'] = base64_decode($request->fotodoc2);
                 }
-                $item = ItemNota::create($datos);
-                $resultNota['fecha'] = $item->data;
-                $resultNota['hora'] = $item->hora;
+                $itemNota = ItemNota::create($datos);
+                $resultNota['fecha'] = $itemNota->data;
+                $resultNota['hora'] = $hora;
 
-                Producto::where('produto', $item['producto'])->update(['quant_pend' => DB::raw('quant_pend + 1')]);
+                Producto::where('produto', $itemNota['producto'])->update(['quant_pend' => DB::raw('quant_pend + 1')]);
+
+                if (array_key_exists('idbloq', $item)) {
+                    Log::info("Id bloq: " . $item['idbloq']);
+                    Bloqueo::where('idbloq', $item['idbloq'])
+                        ->update([
+                            'horafim' => $hora,
+                        ]);
+                }
             }
 
         });

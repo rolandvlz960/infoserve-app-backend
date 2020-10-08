@@ -6,6 +6,7 @@ use App\Bloqueo;
 use App\Deposito;
 use App\Dispositivo;
 use App\Nota;
+use App\Subproducto;
 use App\Usuario;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -161,15 +162,13 @@ class ProductosController extends Controller
         )
             ->where('produto', $id)
             ->first();
+        Log::info("prod composto? " . $producto->COMPOSTO);
         if($producto->COMPOSTO == 'S') {
             $subitems = $producto->subitems()->where('sr_deleted', '<>', 'T')->get();
             DB::beginTransaction();
             $count = 0;
             foreach ($subitems as $subitem) {
                 $itemCant = $subitem->QUANTIDADE;
-                Log::info("Cant: " . $cant);
-                Log::info("Item cant: " . $itemCant);
-                Log::info("Calc: " . ( $cant * $itemCant ));
                 $count += Producto::where('produto', $subitem->SUBITEM)
                     ->where("dep$dep", '>', 0)
                     ->whereRaw("dep$dep-bloq_dep$dep >= " . ( $cant * $itemCant ))
@@ -178,6 +177,7 @@ class ProductosController extends Controller
                         'bloqapp' => DB::raw('bloqapp + ' . ( $cant * $itemCant ))
                     ]);
             }
+            Log::info("count: " . $count);
             if ($count != $subitems->count()) {
                 DB::rollBack();
                 return [
@@ -199,27 +199,51 @@ class ProductosController extends Controller
 
         if ($res != 0) {
             if ($idBloqueo == 0) {
-                $lastBloqueo = Bloqueo::max('idbloq');
+                $lastBloqueo = Bloqueo::max(DB::raw('cast(idbloq as unsigned)'));
                 $fechaEncerra = Nota::select('encerra')->first()->encerra;
                 $idBloqueo = !is_null($lastBloqueo) ? ( $lastBloqueo + 1 ) : 1;
-                $producto = Producto::where('produto', $id)->select('digito')->first();
-                Bloqueo::create([
-                    'idbloq' => $idBloqueo,
-                    'usuario' => $idUsuario,
-                    'hora' => DB::raw('time_format(NOW(), "%H:%i:%s")'),
-                    'horafim' => '',
-                    'data' => Carbon::createFromFormat('Y-m-d', $fechaEncerra)->addDay()->format('Y-m-d'),
-                    'nome' => $usuario->nome,
-                    'produto' => $producto->digito,
-                    'quantidade' => $cant,
-                    'deposito' => $dep,
-                    'status' => '',
-                    'qtdedesb' => 0,
-                    'operacao' => 1,
-                    'sr_deleted' => '',
-                ]);
+                if ($producto->COMPOSTO == 'S') {
+                    $itemsToBlock = $producto->subitems()->where('sr_deleted', '<>', 'T')->get();
+                } else {
+                    $itemsToBlock = [$producto];
+                }
+                foreach ($itemsToBlock as $item) {
+                    $cant = $item instanceof Subproducto ? $item->QUANTIDADE : 1;
+                    $id = $item instanceof Subproducto ? $item->SUBITEM : $producto->PRODUTO;
+
+                    $producto = Producto::where('produto', $id)->select('digito')->first();
+                    Bloqueo::create([
+                        'idbloq' => $idBloqueo,
+                        'usuario' => $idUsuario,
+                        'hora' => DB::raw('time_format(NOW(), "%H:%i:%s")'),
+                        'horafim' => '',
+                        'data' => Carbon::createFromFormat('Y-m-d', $fechaEncerra)->addDay()->format('Y-m-d'),
+                        'nome' => $usuario->nome,
+                        'produto' => $producto->digito,
+                        'quantidade' => $cant,
+                        'deposito' => $dep,
+                        'status' => '',
+                        'qtdedesb' => 0,
+                        'operacao' => 1,
+                        'sr_deleted' => '',
+                    ]);
+                }
             } else {
-                Bloqueo::where('idbloq', '=', $idBloqueo)->increment('quantidade', $cant);
+                if ($producto->COMPOSTO == 'S') {
+                    $itemsToBlock = $producto->subitems()->where('sr_deleted', '<>', 'T')->get();
+                } else {
+                    $itemsToBlock = [$producto];
+                }
+                foreach ($itemsToBlock as $item) {
+                    Log::info("instanceof subp: " . ( $item instanceof Subproducto ? "Y": "N" ));
+                    $cant = $item instanceof Subproducto ? $item->QUANTIDADE : 1;
+                    $id = $item instanceof Subproducto ? $item->SUBITEM : $producto->PRODUTO;
+                    Log::info("id PROD IN BLOQ" . $id);
+                    $producto = Producto::where('produto', $id)->select('digito')->first();
+                    Bloqueo::where('idbloq', '=', $idBloqueo)
+                        ->where('produto', '=', $producto->digito)
+                        ->increment('quantidade', $cant);
+                }
             }
         }
 
@@ -273,7 +297,27 @@ class ProductosController extends Controller
                 ]);
         }
 
-        $updated = Bloqueo::where('idbloq', '=', $idBloqueo)->where('quantidade', '>', $numDeleted)->decrement('quantidade', $numDeleted);
+        $updated = 0;
+
+        if ($producto->COMPOSTO == 'S') {
+            $itemsToBlock = $producto->subitems()->where('sr_deleted', '<>', 'T')->get();
+        } else {
+            $itemsToBlock = [$producto];
+        }
+        foreach ($itemsToBlock as $item) {
+            Log::info("instanceof subp: " . ( $item instanceof Subproducto ? "Y": "N" ));
+            $cant = $item instanceof Subproducto ? ( $item->QUANTIDADE * $numDeleted ) : $numDeleted;
+            $id = $item instanceof Subproducto ? $item->SUBITEM : $producto->PRODUTO;
+            Log::info("id PROD IN BLOQ" . $id);
+            $producto = Producto::where('produto', $id)->select('digito')->first();
+            $updated += Bloqueo::where('idbloq', '=', $idBloqueo)
+                ->where('produto', '=', $producto->digito)
+                ->where('quantidade', '>', $cant)
+                ->decrement('quantidade', $cant);
+        }
+
+        $updated = Bloqueo::where('idbloq', '=', $idBloqueo)
+            ->where('quantidade', '>', $numDeleted)->decrement('quantidade', $numDeleted);
 
         if (!$updated) {
             Bloqueo::where('idbloq', '=', $idBloqueo)->update([
