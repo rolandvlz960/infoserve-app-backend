@@ -63,6 +63,8 @@ class NotaController extends Controller
 
             $hora = DB::select("SELECT TIME_FORMAT(CURTIME(), '%h:%i:%s') AS hora")[0]->hora;
 
+            $codCidade = $request->has('codciudad') ? $request->codciudad : 0;
+
             foreach($request->items as $item) {
                 Log::info("item: " . json_encode($item));
                 $producto = Producto::select('COMPOSTO')->where('produto', '=', $item['producto'])->first();
@@ -78,8 +80,8 @@ class NotaController extends Controller
                     'clinovo' => $turista ? 'S' : 'N',
                     'nome' => !$turista ? $request->nombre : $cliente->NOME,
                     'endereco' => !$turista ? $request->direccion : $cliente->ENDERECO,
-                    'codcidade' => 0,
-                    'cidade' => !$turista ? $request->ciudad : $cliente->CIDADE,
+                    'codcidade' => $codCidade,
+                    'cidade' => !$turista ? $request->ciudad ?? '' : $cliente->CIDADE,
                     'telefone' => !$turista ? $request->telefono : $cliente->FONE,
                     'ruc' => !$turista ? '' : $cliente->RUC,
                     'doc' => !$turista ? $request->doc : $cliente->RG,

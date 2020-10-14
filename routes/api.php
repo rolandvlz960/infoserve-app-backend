@@ -37,6 +37,9 @@ Route::get('clientes', 'API\ClientesController@index');
 Route::get('monedas', 'API\MonedasController@index');
 Route::get('cambio', 'API\CambioController@index');
 
+Route::get('ciudades', 'API\CiudadController@ciudades');
+Route::get('paises', 'API\CiudadController@paises');
+
 Route::post('pedidos', 'API\PedidosController@send');
 
 Route::get('gerentes', 'API\GerentesController@index');
