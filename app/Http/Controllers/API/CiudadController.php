@@ -16,10 +16,12 @@ class CiudadController extends Controller
         ];
     }
 
-    public function ciudades()
+    public function ciudades(Request $request)
     {
         return [
-            'data' => Ciudad::all(),
+            'data' => $request->has('id_pais')
+                ? Ciudad::where('id_pais', $request->id_pais)->get()
+                : Ciudad::all(),
         ];
     }
 
