@@ -50,6 +50,7 @@ Route::post('descuentos/cancel', 'API\DescuentoController@dropDescuento');
 Route::post('notas', 'API\NotaController@save');
 Route::post('notas/reprint', 'API\NotaController@reprint');
 Route::get('notas/{doc}', 'API\NotaController@findByDoc');
+Route::get('notas/fotodoc/{doc}/{num}', 'API\NotaController@fotodocByDoc');
 
 Route::get('printers', 'API\PrintersController@index');
 

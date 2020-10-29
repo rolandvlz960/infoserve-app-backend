@@ -9,8 +9,8 @@ use App\Moneda;
 
 class MonedasController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        return Moneda::defaultSelect()->get();
+        return Moneda::defaultSelect($request->has('all'))->get();
     }
 }

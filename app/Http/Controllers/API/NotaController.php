@@ -3,12 +3,15 @@
 namespace App\Http\Controllers\API;
 
 use App\Bloqueo;
+use App\Ciudad;
 use App\Jobs\PrintNota;
+use App\Pais;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
 
+use Intervention\Image\Facades\Image;
 use Mike42\Escpos\PrintConnectors\NetworkPrintConnector;
 use Mike42\Escpos\Printer;
 
@@ -195,11 +198,34 @@ class NotaController extends Controller
      */
     public function findByDoc($doc)
     {
-        return ItemNota::select(
+        $item = ItemNota::select(
             'nome',
             'endereco',
+            'codcidade',
             'cidade',
             'telefone'
         )->where('doc', '=', $doc)->orderBy('sr_recno', 'desc')->first();
+        if (!is_null($item) && $item->codcidade != 0) {
+            $ciudad = Ciudad::select('id_pais')->whereCodigo($item->codcidade)->first();
+            if (!is_null($ciudad)) {
+                $item->codpais = $ciudad->id_pais;
+            }
+        }
+
+        return $item;
+    }
+
+    public function fotodocByDoc($doc, $num)
+    {
+        $field = 'fotodoc' . $num;
+        $item = ItemNota::select(
+            $field
+        )->where('doc', '=', $doc)->orderBy('sr_recno', 'desc')->first();
+        if (!is_null($item)) {
+            $image = Image::make($item->$field);
+
+            return $image->response('data-url');
+        }
+        return '';
     }
 }

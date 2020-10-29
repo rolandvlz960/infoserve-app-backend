@@ -9,14 +9,22 @@ class Moneda extends Model
     public $table = "fil300";
     public $timestamps = false;
 
-    public function scopeDefaultSelect($q)
+    public function scopeDefaultSelect($q, $all = false)
     {
-        return $q->select(
+        $q = $q->select(
             'moeda',
             'sigla',
             'nomeplural',
             'operacao',
             'mascara'
-        )->where('moeda', 1);
+        );
+
+        if ($all) {
+            $q = $q->orderBy('moeda', 'asc');
+        } else {
+            $q = $q->where('moeda', 1);
+        }
+
+        return $q;
     }
 }
