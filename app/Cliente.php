@@ -21,7 +21,8 @@ class Cliente extends Model
             'cidade',
             'rg',
             'fone',
-            'endereco'
+            'endereco',
+            'bloqueia'
         );
     }
 
