@@ -118,6 +118,18 @@ class ProductosController extends Controller
         ];
     }
 
+    public function downloadFotos()
+    {
+        return [
+            'data' => Foto::select(
+                        'produto',
+                        'dua'
+                    )
+                        ->where('foto1', '<>', null)
+                        ->get()
+        ];
+    }
+
     public function foto($id)
     {
         try {

@@ -27,6 +27,7 @@ Route::get('depositos', 'API\DepositosController@index');
 
 Route::get('productos', 'API\ProductosController@index');
 Route::get('productos/{id}/stocks', 'API\ProductosController@stocks');
+Route::get('productos/download-fotos', 'API\ProductosController@downloadFotos');
 Route::get('productos/{id}/foto', 'API\ProductosController@foto');
 Route::post('productos/inc/{id}', 'API\ProductosController@incQtt');
 Route::post('productos/dec/{id}', 'API\ProductosController@decQtt');
