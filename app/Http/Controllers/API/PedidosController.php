@@ -42,6 +42,17 @@ class PedidosController extends Controller
                     'fone',
                     'endereco'
                 )->where('cliente', '=', $pedido['cliente'])->first();
+                if (is_null($cliente)) {
+                    $cliente = json_decode(json_encode([
+                        'cliente' => 0,
+                        'nome' => $pedido['nome'],
+                        'endereco' => $pedido['endereco'],
+                        'fone' => $pedido['telefone'],
+                        'ruc' => $pedido['ruc'],
+                        'cidade' => $pedido['cidade'],
+                        'clinovo' => true,
+                    ]), false);
+                }
                 Log::info('CLIENTE: ' . json_encode($cliente));
                 $produto = Producto::select(
                     'produto',
@@ -76,8 +87,8 @@ class PedidosController extends Controller
                     'ref_opera' => 0,
                     'notas' => '',
                     'entregue' => 0,
-                    'clinovo' => '',
-                    'cidade' => '',
+                    'clinovo' => $cliente->clinovo ? 'S' : '',
+                    'cidade' => $cliente->cidade ?? '',
                     'codcidade' => 0,
                     'recvalor' => 0,
                     'autoriza' => 0,
