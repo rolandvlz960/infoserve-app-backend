@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API;
 
 use App\Bloqueo;
 use App\Ciudad;
+use App\FotoTurista;
 use App\Jobs\PrintNota;
 use App\Pais;
 use Illuminate\Http\Request;
@@ -99,11 +100,23 @@ class NotaController extends Controller
                     'finalizar' => 0,
                     'sr_deleted' => 0,
                 ];
-                if ($request->has('fotodoc1')) {
-                    $datos['fotodoc1'] = base64_decode($request->fotodoc1);
-                }
-                if ($request->has('fotodoc2')) {
-                    $datos['fotodoc2'] = base64_decode($request->fotodoc2);
+                if (env('USE_FIL154_PHOTOS', false)) {
+                    if ($request->has('fotodoc1') && $request->has('fotodoc2')) {
+                        FotoTurista::create([
+                            'rg' => !$turista ? $request->doc : $cliente->RG,
+                            'foto1' => base64_decode($request->fotodoc1),
+                            'foto2' => base64_decode($request->fotodoc2),
+                            'cliente' => $request->cliente,
+                            'usuario' => $request->vendedor,
+                        ]);
+                    }
+                } else {
+                    if ($request->has('fotodoc1')) {
+                        $datos['fotodoc1'] = base64_decode($request->fotodoc1);
+                    }
+                    if ($request->has('fotodoc2')) {
+                        $datos['fotodoc2'] = base64_decode($request->fotodoc2);
+                    }
                 }
                 $itemNota = ItemNota::create($datos);
                 $resultNota['fecha'] = $itemNota->data;

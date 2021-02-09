@@ -53,6 +53,10 @@ Route::post('notas/reprint', 'API\NotaController@reprint');
 Route::get('notas/{doc}', 'API\NotaController@findByDoc');
 Route::get('notas/fotodoc/{doc}/{num}', 'API\NotaController@fotodocByDoc');
 
+Route::get('foto-cliente/check-foto-obligatoria', 'API\FotoClienteController@checkFotoObligatoria');
+Route::get('foto-cliente/verificar/{usuario}', 'API\FotoClienteController@verificar');
+Route::post('foto-cliente/actualizar/{usuario}', 'API\FotoClienteController@actualizar');
+
 Route::get('printers', 'API\PrintersController@index');
 
 Route::get('test', 'API\TestController@test');
