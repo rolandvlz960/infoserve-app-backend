@@ -108,6 +108,7 @@ class NotaController extends Controller
                             'foto2' => base64_decode($request->fotodoc2),
                             'cliente' => $request->cliente,
                             'usuario' => $request->vendedor,
+                            'flag' => '',
                         ]);
                     }
                 } else {

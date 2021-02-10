@@ -14,6 +14,7 @@ class FotoTurista extends Model
         'foto2',
         'cliente',
         'usuario',
+        'flag',
     ];
 
     protected $primaryKey = "rg";
