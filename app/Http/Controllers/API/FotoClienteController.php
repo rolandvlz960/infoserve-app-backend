@@ -65,7 +65,7 @@ class FotoClienteController extends Controller
             ->where('numero', $usuario)
             ->update([
                 'doccliefot' => '',
-                'codcliefot' => '',
+                'codcliefot' => 0,
                 'nomcliefot' => ''
             ]);
 
