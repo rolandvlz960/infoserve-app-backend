@@ -39,10 +39,10 @@ class FotoClienteController extends Controller
 
         if (is_null($res)) {
             $res = [
-                'numero' => null,
-                'doccliefot' => null,
-                'codcliefot' => null,
-                'nomcliefot' => null
+                'numero' => '',
+                'doccliefot' => '',
+                'codcliefot' => '',
+                'nomcliefot' => ''
             ];
         }
 
