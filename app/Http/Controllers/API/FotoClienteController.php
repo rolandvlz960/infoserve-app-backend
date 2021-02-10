@@ -39,10 +39,10 @@ class FotoClienteController extends Controller
 
         if (is_null($res)) {
             $res = [
-                'numero' => '',
-                'doccliefot' => '',
-                'codcliefot' => '',
-                'nomcliefot' => ''
+                'numero' => null,
+                'doccliefot' => null,
+                'codcliefot' => null,
+                'nomcliefot' => null
             ];
         }
 
@@ -64,9 +64,9 @@ class FotoClienteController extends Controller
         DB::table(self::PHOTO_REQUEST_TABLE)
             ->where('numero', $usuario)
             ->update([
-                'doccliefot' => null,
-                'codcliefot' => null,
-                'nomcliefot' => null
+                'doccliefot' => '',
+                'codcliefot' => '',
+                'nomcliefot' => ''
             ]);
 
         return [
