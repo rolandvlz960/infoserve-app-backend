@@ -101,7 +101,10 @@ class NotaController extends Controller
                     'sr_deleted' => 0,
                 ];
                 if (env('USE_FIL154_PHOTOS', false)) {
-                    if ($request->has('fotodoc1') && $request->has('fotodoc2')) {
+                    if (
+                        $request->has('fotodoc1') && $request->fotodoc1 != '' && $request->fotodoc1 != null &&
+                        $request->has('fotodoc2') && $request->fotodoc2 != '' && $request->fotodoc2 != null
+                    ) {
                         FotoTurista::create([
                             'rg' => !$turista ? $request->doc : $cliente->RG,
                             'foto1' => base64_decode($request->fotodoc1),

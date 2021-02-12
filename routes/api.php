@@ -56,6 +56,7 @@ Route::get('notas/fotodoc/{doc}/{num}', 'API\NotaController@fotodocByDoc');
 Route::get('foto-cliente/check-foto-obligatoria', 'API\FotoClienteController@checkFotoObligatoria');
 Route::get('foto-cliente/verificar/{usuario}', 'API\FotoClienteController@verificar');
 Route::post('foto-cliente/actualizar/{usuario}', 'API\FotoClienteController@actualizar');
+Route::get('foto-cliente/fotodoc/{doc}/{num}', 'API\FotoClienteController@fotodocByCliente');
 
 Route::get('printers', 'API\PrintersController@index');
 

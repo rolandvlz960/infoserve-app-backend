@@ -10,6 +10,12 @@ class Usuario extends Model
     protected $table = "fil020";
     public $timestamps = false;
 
+    protected $fillable = [
+        'doccliefot',
+        'codcliefot',
+        'nomcliefot',
+    ];
+
     public function scopeDefaultSelect($q)
     {
         return $q->select(
