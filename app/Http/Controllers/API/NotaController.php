@@ -105,6 +105,12 @@ class NotaController extends Controller
                         $request->has('fotodoc1') && $request->fotodoc1 != '' && $request->fotodoc1 != null &&
                         $request->has('fotodoc2') && $request->fotodoc2 != '' && $request->fotodoc2 != null
                     ) {
+                        FotoTurista::where('cliente', $request->cliente)
+                            ->where('sr_deleted', '<>', 'T')
+                            ->update([
+                                'sr_deleted' => 'T',
+                                'usuariodel' => $request->vendedor,
+                            ]);
                         FotoTurista::create([
                             'rg' => !$turista ? $request->doc : $cliente->RG,
                             'foto1' => base64_decode($request->fotodoc1),
@@ -112,6 +118,7 @@ class NotaController extends Controller
                             'cliente' => $request->cliente,
                             'usuario' => $request->vendedor,
                             'flag' => '',
+                            'usuariodel' => 0
                         ]);
                     }
                 } else {
