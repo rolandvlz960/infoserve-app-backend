@@ -29,7 +29,7 @@ class FotoClienteController extends Controller
         $item = FotoTurista::select(
             $field
         )->where('cliente', '=', $cliente)
-            ->where('sr_deleted', '<>', 'T')
+            ->where('sr_deleted', '=', null)
             ->orderBy('sr_recno', 'desc')
             ->first();
         if (!is_null($item)) {
