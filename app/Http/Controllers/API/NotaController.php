@@ -106,8 +106,7 @@ class NotaController extends Controller
                         $request->has('fotodoc2') && $request->fotodoc2 != '' && $request->fotodoc2 != null
                     ) {
                         FotoTurista::where('cliente', $request->cliente)
-                            ->where('sr_deleted', '<>', 'T')
-                            ->orWhere('sr_deleted', '=', null)
+                            ->where('sr_deleted', '=', null)
                             ->update([
                                 'sr_deleted' => 'T',
                                 'usuariodel' => $request->vendedor,
