@@ -65,6 +65,7 @@ class FotoClienteController extends Controller
 
     public function actualizar($usuario, Request $request)
     {
+        Log::info('Cliente: ' . $request->cliente);
         FotoTurista::where('cliente', $request->cliente)
             ->where('sr_deleted', '<>', 'T')
             ->update([
