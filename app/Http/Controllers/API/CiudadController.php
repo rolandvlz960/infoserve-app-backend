@@ -12,7 +12,10 @@ class CiudadController extends Controller
     public function paises()
     {
         return [
-            'data' => Pais::all(),
+            'data' => Pais::select(
+                'NOME',
+                'CODIGO'
+            )->get(),
         ];
     }
 
@@ -20,8 +23,8 @@ class CiudadController extends Controller
     {
         return [
             'data' => $request->has('id_pais')
-                ? Ciudad::where('id_pais', $request->id_pais)->get()
-                : Ciudad::all(),
+                ? Ciudad::where('id_pais', $request->id_pais)->select('CODIGO', 'NOME', 'id_pais')->get()
+                : Ciudad::select('CODIGO', 'NOME', 'id_pais')->get(),
         ];
     }
 

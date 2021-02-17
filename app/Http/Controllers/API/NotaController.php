@@ -241,10 +241,13 @@ class NotaController extends Controller
 
     public function fotodocByDoc($doc, $num)
     {
-        $field = 'fotodoc' . $num;
-        $item = ItemNota::select(
+        $field = 'foto' . $num;
+        $item = FotoTurista::select(
             $field
-        )->where('doc', '=', $doc)->orderBy('sr_recno', 'desc')->first();
+        )->where('rg', '=', $doc)
+            ->where('sr_deleted', '=', null)
+            ->orderBy('sr_recno', 'desc')
+            ->first();
         if (!is_null($item)) {
             $image = Image::make($item->$field);
 

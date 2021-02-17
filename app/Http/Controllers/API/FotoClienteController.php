@@ -65,27 +65,30 @@ class FotoClienteController extends Controller
 
     public function actualizar($usuario, Request $request)
     {
-        FotoTurista::where('cliente', $request->cliente)
-            ->where('sr_deleted', '=', null)
-            ->update([
-                'sr_deleted' => 'T',
-                'usuariodel' => $usuario
+        Log::info("Foto cliente actualizar req: " . json_encode($request->except('fotodoc1', 'fotodoc2')));
+        if (!$request->has('dontUpdateFil154') || !$request->dontUpdateFil154) {
+            FotoTurista::where('cliente', $request->cliente)
+                ->where('sr_deleted', '=', null)
+                ->update([
+                    'sr_deleted' => 'T',
+                    'usuariodel' => $usuario
+                ]);
+            FotoTurista::create([
+                'rg' => is_null($request->doc) ? '' : $request->doc,
+                'foto1' => base64_decode($request->fotodoc1),
+                'foto2' => base64_decode($request->fotodoc2),
+                'cliente' => $request->cliente,
+                'usuario' => $usuario,
+                'flag' => '',
+                'usuariodel' => 0,
             ]);
-        FotoTurista::create([
-            'rg' => is_null($request->doc) ? '' : $request->doc,
-            'foto1' => base64_decode($request->fotodoc1),
-            'foto2' => base64_decode($request->fotodoc2),
-            'cliente' => $request->cliente,
-            'usuario' => $usuario,
-            'flag' => '',
-            'usuariodel' => 0,
-        ]);
+        }
 
         if (!$request->has('dontUpdateFil020') || !$request->dontUpdateFil020) {
             Log::info('Update Fil020 present');
             Usuario::where('numero', $usuario)
                 ->update([
-                    'doccliefot' => 0,
+                    'doccliefot' => '',
                     'codcliefot' => 0,
                     'nomcliefot' => ''
                 ]);
