@@ -23,12 +23,12 @@ class FotoClienteController extends Controller
         ];
     }
 
-    public function fotodocByCliente($cliente, $num)
+    public function fotodocByCliente($doc, $num)
     {
         $field = 'foto' . $num;
         $item = FotoTurista::select(
             $field
-        )->where('cliente', '=', $cliente)
+        )->where('rg', '=', $doc)
             ->where('sr_deleted', '=', null)
             ->orderBy('sr_recno', 'desc')
             ->first();
@@ -67,7 +67,7 @@ class FotoClienteController extends Controller
     {
         Log::info("Foto cliente actualizar req: " . json_encode($request->except('fotodoc1', 'fotodoc2')));
         if (!$request->has('dontUpdateFil154') || !$request->dontUpdateFil154) {
-            FotoTurista::where('cliente', $request->cliente)
+            FotoTurista::where('rg', $request->doc)
                 ->where('sr_deleted', '=', null)
                 ->update([
                     'sr_deleted' => 'T',

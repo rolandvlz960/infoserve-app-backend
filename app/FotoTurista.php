@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class FotoTurista extends Model
 {
     protected $table = "fil154";
-
+    protected $connection = "mysql-second";
     protected $fillable = [
         'rg',
         'foto1',
