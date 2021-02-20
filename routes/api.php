@@ -60,4 +60,6 @@ Route::get('foto-cliente/fotodoc/{doc}/{num}', 'API\FotoClienteController@fotodo
 
 Route::get('printers', 'API\PrintersController@index');
 
+Route::get('dynamic-link/{varName}', 'API\DynamicLinkController@getValue');
+
 Route::get('test', 'API\TestController@test');
