@@ -27,6 +27,7 @@ class Pedido extends Model
         'prodkit',
         'operacao',
         'localizacion',
+        'geolocal',
 
         'mobicli',
         'sr_deleted',
