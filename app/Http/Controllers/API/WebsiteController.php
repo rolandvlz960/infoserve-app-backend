@@ -35,7 +35,7 @@ class WebsiteController extends Controller
 
         return [
             'nota' => json_decode($res->getBody()->getContents()),
-            'nivelpreco' => 'b'
+            'nivelpreco' => 'a'
         ];
     }
 }
