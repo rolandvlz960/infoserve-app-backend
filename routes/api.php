@@ -43,6 +43,8 @@ Route::get('paises', 'API\CiudadController@paises');
 
 Route::post('pedidos', 'API\PedidosController@send');
 
+Route::get('website/import-pedido/{id}', 'API\WebsiteController@importPedido');
+
 Route::get('gerentes', 'API\GerentesController@index');
 Route::post('descuentos/open', 'API\DescuentoController@open');
 Route::post('descuentos/check', 'API\DescuentoController@checkDescuento');
@@ -57,6 +59,8 @@ Route::get('foto-cliente/check-foto-obligatoria', 'API\FotoClienteController@che
 Route::get('foto-cliente/verificar/{usuario}', 'API\FotoClienteController@verificar');
 Route::post('foto-cliente/actualizar/{usuario}', 'API\FotoClienteController@actualizar');
 Route::get('foto-cliente/fotodoc/{doc}/{num}', 'API\FotoClienteController@fotodocByCliente');
+
+//Route::get('cobranzas', 'API\CobranzasController@index');
 
 Route::get('printers', 'API\PrintersController@index');
 
