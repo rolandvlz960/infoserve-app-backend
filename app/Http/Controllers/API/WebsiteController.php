@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Nota;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
 use Illuminate\Http\Request;
@@ -33,9 +34,11 @@ class WebsiteController extends Controller
             ];
         }
 
+        $nipreapp = Nota::select('nipreapp')->first()->nipreapp;
+
         return [
             'nota' => json_decode($res->getBody()->getContents()),
-            'nivelpreco' => 'a'
+            'nivelpreco' => strtolower($nipreapp),
         ];
     }
 }
