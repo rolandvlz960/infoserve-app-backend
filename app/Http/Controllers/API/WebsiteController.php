@@ -7,6 +7,7 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Log;
 
 class WebsiteController extends Controller
 {
@@ -28,6 +29,7 @@ class WebsiteController extends Controller
                     'message' => 'Error de autenticación. Hash incorrecto'
                 ];
             }
+            Log::info('Error al recuperar pedido de Ecommerce: ' . $e->getMessage() . ' (Cod: ' . $e->getCode() . ')');
             return [
                 'status' => 'error',
                 'message' => 'Error inesperado'
