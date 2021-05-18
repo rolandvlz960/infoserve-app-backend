@@ -59,7 +59,7 @@ class PedidosController extends Controller
                     'digito',
                     'composto'
                 )->where('produto', '=', $pedido['id_producto'])->first();
-                Pedido::create([
+                $pedidoData = [
                     'vendedor' => $pedido['id_vendedor'],
                     'mobiped' => $nota,
                     'mobiid' => $nota . '-' . $pedido['id_vendedor'],
@@ -92,7 +92,11 @@ class PedidosController extends Controller
                     'codcidade' => 0,
                     'recvalor' => 0,
                     'autoriza' => 0,
-                ]);
+                ];
+                if (array_key_exists('observacao', $pedido)) {
+                    $pedidoData['observacoes'] = $pedido['observacao'];
+                }
+                Pedido::create($pedidoData);
             }
             $return = $nota;
         });

@@ -43,5 +43,7 @@ class Pedido extends Model
         'codcidade',
         'recvalor',
         'autoriza',
+
+        'observacoes',
     ];
 }
