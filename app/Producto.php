@@ -11,7 +11,7 @@ class Producto extends Model
     protected $table = "fil010";
     protected $primaryKey = "digito";
     public $timestamps = false;
-    protected $connection = "mysql-second";
+//    protected $connection = "mysql-second";
 
     public function fotoProducto()
     {

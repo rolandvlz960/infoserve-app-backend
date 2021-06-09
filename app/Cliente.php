@@ -9,7 +9,7 @@ class Cliente extends Model
     protected $table = "fil150";
     protected $primaryKey = "digito";
     public $timestamps = false;
-    protected $connection = "mysql-second";
+//    protected $connection = "mysql-second";
 
     public function scopeDefaultSelect($q)
     {

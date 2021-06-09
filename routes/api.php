@@ -60,7 +60,8 @@ Route::get('foto-cliente/verificar/{usuario}', 'API\FotoClienteController@verifi
 Route::post('foto-cliente/actualizar/{usuario}', 'API\FotoClienteController@actualizar');
 Route::get('foto-cliente/fotodoc/{doc}/{num}', 'API\FotoClienteController@fotodocByCliente');
 
-//Route::get('cobranzas', 'API\CobranzasController@index');
+Route::get('cobranzas', 'API\CobranzasController@index');
+Route::post('cobranzas/upload-cobranzas', 'API\CobranzasController@uploadCobranzas');
 
 Route::get('printers', 'API\PrintersController@index');
 
