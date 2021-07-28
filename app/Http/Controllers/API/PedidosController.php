@@ -95,6 +95,8 @@ class PedidosController extends Controller
                 ];
                 if (array_key_exists('observacao', $pedido)) {
                     $pedidoData['observacoes'] = $pedido['observacao'];
+                } else {
+                    $pedidoData['observacoes'] = '';
                 }
                 Pedido::create($pedidoData);
             }
