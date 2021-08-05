@@ -47,11 +47,11 @@ class ProductosController extends Controller
             $productos = Producto::defaultSelectPreco($request->has('ve') && $configDep != 0 ? $configDep : $request->dep, $config->precoapp);
         }
         if ($request->has('ve')) {
-            $dispositivo = Dispositivo::where('id', '=', $request->key)
-                ->select(
-                    'AUTORIZA'
-                )
-                ->first();
+            //$dispositivo = Dispositivo::where('id', '=', $request->key)
+            //    ->select(
+            //        'AUTORIZA'
+            //    )
+            $dispositivo = Dispositivo::first();
             if (is_null($dispositivo)) {
                 $vendedor = Usuario::where('numero', '=', $request->ven)
                     ->select('NOME')
@@ -87,15 +87,18 @@ class ProductosController extends Controller
         }
         $productos = $productos->filtrar($request->producto)
             ->filtrarTipo($request)
-//            ->where('COMPOSTO', '<>', 'S')
+            //            ->where('COMPOSTO', '<>', 'S')
             ->orderBy('DESCRICAO', 'ASC');
         if (!$request->has('get-all')) {
             $productos = $productos->limit(20)
                 ->skip(20 * ($page - 1));
         }
         $productos = $productos->get();
-
+        // $desc = DB::table('fil530')->select('descritivo')->where('produto', 1159)->get();
+        // return $desc;
         $res = $productos->map(function ($item) use ($request, $config) {
+            $desc = DB::table('fil530')->select('descritivo')->where('produto', $item->produto)->get();
+            $item->descritivo = isset($desc[0]) ? json_encode($desc[0]->descritivo) : '';
             $item->foto = '';
             if (
                 (!$request->has('get-all'))
@@ -122,11 +125,11 @@ class ProductosController extends Controller
     {
         return [
             'data' => Foto::select(
-                        'produto',
-                        'dua'
-                    )
-                        ->where('foto1', '<>', null)
-                        ->get()
+                'produto',
+                'dua'
+            )
+                ->where('foto1', '<>', null)
+                ->get()
         ];
     }
 
@@ -134,14 +137,13 @@ class ProductosController extends Controller
     {
         try {
             $foto = Foto::delProducto($id)
-            ->select('foto1')
-            ->firstOrFail();
+                ->select('foto1')
+                ->firstOrFail();
 
             $image = Image::make($foto->foto1);
 
             return $image->response('jpg');
-
-        } catch(ModelNotFoundException $e) {
+        } catch (ModelNotFoundException $e) {
             return '';
         }
     }
@@ -175,7 +177,7 @@ class ProductosController extends Controller
             ->where('produto', $id)
             ->first();
         Log::info("prod composto? " . $producto->COMPOSTO);
-        if($producto->COMPOSTO == 'S') {
+        if ($producto->COMPOSTO == 'S') {
             $subitems = $producto->subitems()->where('sr_deleted', '<>', 'T')->get();
             DB::beginTransaction();
             $count = 0;
@@ -183,10 +185,10 @@ class ProductosController extends Controller
                 $itemCant = $subitem->QUANTIDADE;
                 $count += Producto::where('produto', $subitem->SUBITEM)
                     ->where("dep$dep", '>', 0)
-                    ->whereRaw("dep$dep-bloq_dep$dep >= " . ( $cant * $itemCant ))
+                    ->whereRaw("dep$dep-bloq_dep$dep >= " . ($cant * $itemCant))
                     ->update([
-                        "bloq_dep$dep" => DB::raw("bloq_dep$dep + " . ( $cant * $itemCant )),
-                        'bloqapp' => DB::raw('bloqapp + ' . ( $cant * $itemCant ))
+                        "bloq_dep$dep" => DB::raw("bloq_dep$dep + " . ($cant * $itemCant)),
+                        'bloqapp' => DB::raw('bloqapp + ' . ($cant * $itemCant))
                     ]);
             }
             Log::info("count: " . $count);
@@ -213,7 +215,7 @@ class ProductosController extends Controller
             if ($idBloqueo == 0) {
                 $lastBloqueo = Bloqueo::max(DB::raw('cast(idbloq as unsigned)'));
                 $fechaEncerra = Nota::select('encerra')->first()->encerra;
-                $idBloqueo = !is_null($lastBloqueo) ? ( $lastBloqueo + 1 ) : 1;
+                $idBloqueo = !is_null($lastBloqueo) ? ($lastBloqueo + 1) : 1;
                 if ($producto->COMPOSTO == 'S') {
                     $itemsToBlock = $producto->subitems()->where('sr_deleted', '<>', 'T')->get();
                 } else {
@@ -247,7 +249,7 @@ class ProductosController extends Controller
                     $itemsToBlock = [$producto];
                 }
                 foreach ($itemsToBlock as $item) {
-                    Log::info("instanceof subp: " . ( $item instanceof Subproducto ? "Y": "N" ));
+                    Log::info("instanceof subp: " . ($item instanceof Subproducto ? "Y" : "N"));
                     $cant = $item instanceof Subproducto ? $item->QUANTIDADE : 1;
                     $id = $item instanceof Subproducto ? $item->SUBITEM : $producto->PRODUTO;
                     Log::info("id PROD IN BLOQ" . $id);
@@ -278,7 +280,7 @@ class ProductosController extends Controller
         )
             ->where('produto', $id)
             ->first();
-        if($producto->COMPOSTO == 'S') {
+        if ($producto->COMPOSTO == 'S') {
             $subitems = $producto->subitems()->where('sr_deleted', '<>', 'T')->get();
             DB::beginTransaction();
             $count = 0;
@@ -287,8 +289,8 @@ class ProductosController extends Controller
                 $count += Producto::where('produto', $subitem->SUBITEM)
                     ->where("bloq_dep$dep", '>', 0)
                     ->update([
-                        "bloq_dep$dep" => DB::raw("bloq_dep$dep - " . ( $numDeleted * $itemCant )),
-                        'bloqapp' => DB::raw("bloqapp - " . ( $numDeleted * $itemCant ))
+                        "bloq_dep$dep" => DB::raw("bloq_dep$dep - " . ($numDeleted * $itemCant)),
+                        'bloqapp' => DB::raw("bloqapp - " . ($numDeleted * $itemCant))
                     ]);
             }
             if ($count != $subitems->count()) {
@@ -317,8 +319,8 @@ class ProductosController extends Controller
             $itemsToBlock = [$producto];
         }
         foreach ($itemsToBlock as $item) {
-            Log::info("instanceof subp: " . ( $item instanceof Subproducto ? "Y": "N" ));
-            $cant = $item instanceof Subproducto ? ( $item->QUANTIDADE * $numDeleted ) : $numDeleted;
+            Log::info("instanceof subp: " . ($item instanceof Subproducto ? "Y" : "N"));
+            $cant = $item instanceof Subproducto ? ($item->QUANTIDADE * $numDeleted) : $numDeleted;
             $id = $item instanceof Subproducto ? $item->SUBITEM : $producto->PRODUTO;
             Log::info("id PROD IN BLOQ" . $id);
             $producto = Producto::where('produto', $id)->select('digito')->first();

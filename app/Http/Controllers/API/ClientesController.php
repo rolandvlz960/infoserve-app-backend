@@ -29,6 +29,8 @@ class ClientesController extends Controller
         $res = $res->get();
         foreach ($res as $cliente) {
             $condPagamentos = CondicaoPagamento::deCliente($cliente->cliente)->pluck('codcondpag');
+	    // iOS TEST
+	    $cliente->condV = 1;
             foreach ($condPagamentos as $condPagamento) {
                 $condAttrName = "cond" . $condPagamento;
                 $cliente->$condAttrName = 1;
